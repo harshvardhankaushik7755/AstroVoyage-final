@@ -41,6 +41,12 @@ export interface Check {
   unit: string;
   /** One short sentence saying what is wrong, or that it is fine. */
   message: string;
+  /**
+   * The same news in a few words, for a check that passed. A passing check
+   * does not need a sentence, and five sentences in a narrow column wrap into
+   * a wall of text that nobody reads.
+   */
+  short: string;
 }
 
 export interface CheckResult {
@@ -119,6 +125,7 @@ export function runChecks(design: Design, scenario: Scenario, route: Route): Che
       cost <= scenario.budget
         ? `$${(scenario.budget - cost).toFixed(1)}M left over.`
         : `Over budget by $${(cost - scenario.budget).toFixed(1)}M. Choose cheaper parts or less fuel.`,
+    short: `$${Math.max(0, scenario.budget - cost).toFixed(1)}M left`,
   };
 
   /* ---- mass */
@@ -135,6 +142,7 @@ export function runChecks(design: Design, scenario: Scenario, route: Route): Che
       launchMass <= capacity
         ? `The ${rocket?.name ?? "rocket"} can lift this, with ${Math.round(capacity - launchMass)} kg spare.`
         : `Too heavy by ${Math.round(launchMass - capacity)} kg. Pick a bigger rocket or carry less.`,
+    short: `${Math.round(Math.max(0, capacity - launchMass))} kg spare`,
   };
 
   /* ---- power */
@@ -151,6 +159,7 @@ export function runChecks(design: Design, scenario: Scenario, route: Route): Che
       available >= needed
         ? `${Math.round(available)} W at ${scenario.target}, and ${Math.round(available - needed)} W spare.`
         : `Only ${Math.round(available)} W at ${scenario.target}, but ${Math.round(needed)} W is needed. Sunlight is weaker out there.`,
+    short: `${Math.round(Math.max(0, available - needed))} W spare`,
   };
 
   /* ---- fuel */
@@ -170,6 +179,7 @@ export function runChecks(design: Design, scenario: Scenario, route: Route): Che
         : have >= need
           ? `${have.toFixed(2)} km/s is just barely enough. Add fuel for a safety margin.`
           : `Only ${have.toFixed(2)} km/s of Δv, and ${need.toFixed(2)} km/s is needed. Add fuel, or use a lighter spacecraft.`,
+    short: `${have.toFixed(2)} km/s, needs ${wanted.toFixed(2)}`,
   };
 
   /* ---- signal */
@@ -186,6 +196,7 @@ export function runChecks(design: Design, scenario: Scenario, route: Route): Che
       share >= settings.minScienceHome
         ? `${Math.round(share * 100)}% of the science gets back to Earth.`
         : `Only ${Math.round(share * 100)}% of the science would reach Earth from ${scenario.target}. A bigger dish sends much more.`,
+    short: `${Math.round(share * 100)}% gets home`,
   };
 
   const checks = [budget, mass, power, fuel, comms];

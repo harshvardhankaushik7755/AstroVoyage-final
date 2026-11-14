@@ -9,6 +9,9 @@
 import { create } from "zustand";
 import type { Design, PartGroup, Route, Scenario } from "../data/game";
 import { findBody, findScenario, parts, presetDesign } from "../data/game";
+import { designFlags } from "../physics/checks";
+import type { SimState } from "../sim/simulation";
+import { createSimulation, resolveEvent, resolveInsertion, step } from "../sim/simulation";
 
 export type Screen = "home" | "choose" | "design" | "launch" | "control" | "result";
 
@@ -32,6 +35,9 @@ export interface GameState {
   launchMonth: number;
   route: Route;
 
+  /** The flight, once it has started. Null everywhere before Mission Control. */
+  sim: SimState | null;
+
   /** Set by the player, and by the operating system's reduced-motion setting. */
   skipAnimations: boolean;
   muted: boolean;
@@ -51,6 +57,16 @@ export interface GameState {
   setLaunchMonth: (month: number) => void;
   setRoute: (route: Route) => void;
 
+  /* ---- flying */
+  launch: (seed?: number) => void;
+  /** Advance the flight by this many real seconds. */
+  tick: (realSeconds: number) => void;
+  setSpeed: (speed: number) => void;
+  /** Answer the waiting challenge. */
+  answer: (optionId: string) => void;
+  /** Run the braking burn at arrival. */
+  doInsertion: () => void;
+
   /* ---- preferences */
   setSkipAnimations: (skip: boolean) => void;
   setMuted: (muted: boolean) => void;
@@ -62,6 +78,7 @@ export const useGame = create<GameState>((set, get) => ({
   design: startingDesign(),
   launchMonth: 0,
   route: "slow",
+  sim: null,
   skipAnimations: false,
   muted: true,
 
@@ -76,6 +93,7 @@ export const useGame = create<GameState>((set, get) => ({
       design: startingDesign(),
       launchMonth: scenario.preset.launchMonth,
       route: "slow",
+      sim: null,
       screen: "design",
     });
   },
@@ -87,6 +105,7 @@ export const useGame = create<GameState>((set, get) => ({
       design: startingDesign(),
       launchMonth: 0,
       route: "slow",
+      sim: null,
     }),
 
   setPart: (group, id) =>
@@ -146,6 +165,52 @@ export const useGame = create<GameState>((set, get) => ({
 
   setLaunchMonth: (month) => set({ launchMonth: Math.max(0, Math.round(month)) }),
   setRoute: (route) => set({ route }),
+
+  launch: (seed) => {
+    const state = get();
+    const scenario = currentScenario(state);
+    if (!scenario) return;
+    // A fresh seed each launch, so the same design can have a different trip.
+    const useSeed = seed ?? Math.floor(Math.random() * 0x7fffffff);
+    set({
+      sim: createSimulation(
+        state.design,
+        scenario,
+        state.route,
+        state.launchMonth,
+        [...designFlags(state.design, scenario)],
+        useSeed,
+      ),
+      screen: "control",
+    });
+  },
+
+  tick: (realSeconds) => {
+    const sim = get().sim;
+    if (!sim) return;
+    const next = step(sim, realSeconds);
+    // step() returns the same object when nothing moved, so this avoids a
+    // pointless re-render on every animation frame while paused.
+    if (next !== sim) set({ sim: next });
+  },
+
+  setSpeed: (speed) => {
+    const sim = get().sim;
+    if (!sim) return;
+    set({ sim: { ...sim, speed: Math.max(0, speed) } });
+  },
+
+  answer: (optionId) => {
+    const sim = get().sim;
+    if (!sim) return;
+    set({ sim: resolveEvent(sim, optionId) });
+  },
+
+  doInsertion: () => {
+    const sim = get().sim;
+    if (!sim) return;
+    set({ sim: resolveInsertion(sim) });
+  },
 
   setSkipAnimations: (skipAnimations) => set({ skipAnimations }),
   setMuted: (muted) => set({ muted }),

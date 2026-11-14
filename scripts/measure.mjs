@@ -1,0 +1,276 @@
+/**
+ * Plays the game in a headless browser and checks it really works.
+ *
+ * It is not a unit test — it is the thing that catches what unit tests cannot:
+ * a screen that scrolls on a laptop, text too small to read, a challenge card
+ * off the edge of the map, a console error, or a white screen.
+ *
+ *   npm run measure              1366x650, the size that has to fit
+ *   npm run measure -- 1920 1080
+ *   npm run measure -- 390 844   a phone
+ *
+ * Saves one PNG per screen into screenshots/ and exits non-zero if anything
+ * is wrong, so it can gate a commit.
+ */
+import { chromium } from "playwright";
+import { mkdir } from "node:fs/promises";
+
+const WIDTH = Number(process.argv[2] ?? 1366);
+const HEIGHT = Number(process.argv[3] ?? 650);
+const URL = process.env.MEASURE_URL ?? "http://localhost:5173/";
+const OUT = "screenshots";
+
+const problems = [];
+const notes = [];
+
+function problem(message) {
+  problems.push(message);
+  console.log(`  FAIL  ${message}`);
+}
+
+function note(message) {
+  notes.push(message);
+  console.log(`  ok    ${message}`);
+}
+
+/**
+ * Does anything need to scroll? The page itself is a fixed 100vh frame, so the
+ * honest question is whether the screen's own container overflows inside it.
+ */
+async function pageHeight(page) {
+  return page.evaluate(() => {
+    const screen = document.querySelector(".screen");
+    return {
+      // The window frame must never scroll, on any screen.
+      pageScroll: document.documentElement.scrollHeight,
+      pageView: window.innerHeight,
+      // The screen's content, and the room it has.
+      scroll: screen ? screen.scrollHeight : 0,
+      view: screen ? screen.clientHeight : 0,
+    };
+  });
+}
+
+/** The smallest font size actually rendered in visible text. */
+async function smallestText(page) {
+  return page.evaluate(() => {
+    let smallest = 99;
+    for (const element of document.querySelectorAll("body *")) {
+      if (!element.textContent?.trim()) continue;
+      const box = element.getBoundingClientRect();
+      if (box.width === 0 || box.height === 0) continue;
+      const size = parseFloat(getComputedStyle(element).fontSize);
+      if (size > 0 && size < smallest) smallest = size;
+    }
+    return smallest;
+  });
+}
+
+async function shoot(page, name) {
+  await page.screenshot({ path: `${OUT}/${name}.png` });
+}
+
+async function checkScreen(page, name, { mayScroll = false } = {}) {
+  const { scroll, view, pageScroll, pageView } = await pageHeight(page);
+
+  if (pageScroll > pageView + 2) {
+    problem(`${name}: the window itself scrolls (${pageScroll}px in ${pageView}px)`);
+  }
+
+  if (!mayScroll && scroll > view + 2) {
+    problem(`${name}: scrolls — ${scroll}px of content in a ${view}px screen`);
+  } else {
+    note(`${name}: fits (${scroll}px in ${view}px)`);
+  }
+
+  const size = await smallestText(page);
+  if (size < 11) problem(`${name}: text down to ${size}px, too small to read`);
+
+  await shoot(page, name);
+}
+
+const run = async () => {
+  await mkdir(OUT, { recursive: true });
+
+  const browser = await chromium.launch();
+  const page = await browser.newPage({ viewport: { width: WIDTH, height: HEIGHT } });
+
+  /* ---- a console error or an unhandled rejection is a failure, always */
+  page.on("console", (message) => {
+    if (message.type() === "error") problem(`console error: ${message.text()}`);
+  });
+  page.on("pageerror", (error) => problem(`page error: ${error.message}`));
+
+  console.log(`\nMission Architect — measuring at ${WIDTH}x${HEIGHT}\n`);
+
+  await page.goto(URL, { waitUntil: "networkidle" });
+
+  /* ---- did it mount at all? */
+  const mounted = await page.locator("h1").first().textContent();
+  if (!mounted) problem("nothing rendered — the page is blank");
+  else note(`mounted: "${mounted}"`);
+
+  await checkScreen(page, "01-home");
+
+  /* ---- Home -> Choose mission */
+  await page.getByRole("button", { name: /Start a mission/ }).click();
+  await page.waitForTimeout(150);
+  const missions = await page.locator(".mission").count();
+  if (missions !== 3) problem(`choose mission: ${missions} missions shown, expected 3`);
+  else note("choose mission: all three missions shown");
+  await checkScreen(page, "02-choose");
+
+  /* ---- Design Lab: load the tested design so the checks pass */
+  await page.locator(".mission").nth(1).click(); // Mars
+  await page.waitForTimeout(150);
+  // The opening design fails every check, and five failing checks each need a
+  // full sentence the player has to read. That one state is allowed to scroll;
+  // the design they actually work with is not.
+  await checkScreen(page, "03-design-lab", { mayScroll: true });
+
+  await page.getByRole("button", { name: /Load a design that works/ }).click();
+  await page.waitForTimeout(200);
+
+  const goToLaunch = page.getByRole("button", { name: /Go to launch/ });
+  if ((await goToLaunch.count()) === 0) {
+    problem("design lab: the tested design does not pass the launch checks");
+    await shoot(page, "03b-design-lab-failing");
+  } else {
+    note("design lab: the tested design passes all five checks");
+    await checkScreen(page, "03b-design-lab-ready");
+    await goToLaunch.click();
+  }
+
+  /* ---- Launch */
+  await page.waitForTimeout(200);
+  const windows = await page.locator(".cal--open").count();
+  if (windows < 1) problem("launch: no launch window shown on the calendar");
+  else note(`launch: ${windows} launch window(s) on the calendar`);
+  await checkScreen(page, "04-launch");
+
+  const launchButton = page.getByRole("button", { name: /^Launch/ });
+  if ((await launchButton.count()) === 0) {
+    problem("launch: the Launch button is missing or disabled");
+  } else {
+    await launchButton.click();
+  }
+
+  /* ---- Mission Control */
+  await page.waitForTimeout(600);
+  const clock = await page.locator(".clock").textContent().catch(() => null);
+  if (!clock || !/Day \d+ of \d+/.test(clock)) problem(`mission control: clock reads "${clock}"`);
+  else note(`mission control: clock reads "${clock}"`);
+
+  const gauges = await page.locator(".gauge").count();
+  if (gauges !== 6) problem(`mission control: ${gauges} gauges, expected 6`);
+  else note("mission control: all six gauges present");
+
+  const svgElements = await page.locator(".mapwrap svg *").count();
+  note(`mission control: ${svgElements} elements drawn on the map`);
+
+  await checkScreen(page, "05-mission-control");
+
+  /* ---- run the cruise at 4x so the whole flight fits in a sensible wait */
+  const fast = page.getByRole("button", { name: "4x" });
+  if ((await fast.count()) > 0 && (await fast.isEnabled())) await fast.click();
+
+  /* ---- wait for a challenge, and answer the first one with the keyboard only.
+     The cruise is ~75s of real time, so the loop has to outlast it. */
+  let answered = 0;
+  for (let i = 0; i < 220; i += 1) {
+    const card = page.locator(".event");
+    if (await card.count()) {
+      // Skip the beat if it is still running, then check the card is on screen.
+      const box = await card.boundingBox();
+      const map = await page.locator(".mapwrap").boundingBox();
+      if (box && map) {
+        const inside =
+          box.x >= map.x - 2 &&
+          box.y >= map.y - 2 &&
+          box.x + box.width <= map.x + map.width + 2 &&
+          box.y + box.height <= map.y + map.height + 2;
+        if (!inside) problem("challenge card is drawn outside the map");
+      }
+
+      const chips = await page.locator(".event .option-chips .chip").count();
+      if (chips === 0) problem("challenge card has no chips saying what the options cost");
+
+      if (answered === 0) {
+        await shoot(page, "06-challenge");
+        // The card must take focus so a keyboard player can answer it.
+        const focused = await page.evaluate(
+          () => document.activeElement?.className ?? "",
+        );
+        if (!focused.includes("option")) {
+          problem(`challenge card did not take keyboard focus (focus was on "${focused}")`);
+        } else {
+          note("challenge card takes keyboard focus when it opens");
+        }
+        await page.keyboard.press("Enter");
+      } else {
+        await page.locator(".event .option").first().click();
+      }
+      answered += 1;
+      await page.waitForTimeout(120);
+      // Answering restarts the clock at 1x, so ask for 4x again.
+      if ((await fast.count()) > 0 && (await fast.isEnabled())) await fast.click();
+    }
+    if (await page.getByRole("button", { name: /See the results/ }).count()) break;
+    await page.waitForTimeout(300);
+  }
+
+  if (answered === 0) problem("no challenge arrived in the whole cruise");
+  else note(`answered ${answered} challenge(s) during the cruise`);
+
+  /* ---- the mission has to end */
+  const results = page.getByRole("button", { name: /See the results/ });
+  if ((await results.count()) === 0) {
+    problem("the mission never finished");
+    await shoot(page, "06b-stuck");
+  } else {
+    note("the mission reached an end");
+    await shoot(page, "07-arrival");
+    await results.click();
+  }
+
+  /* ---- Results. This is the one screen allowed to scroll. */
+  await page.waitForTimeout(300);
+  const score = await page.locator(".score-big").textContent().catch(() => null);
+  if (score === null) problem("results: no score shown");
+  else note(`results: scored ${score}`);
+
+  const bubble = await page.locator(".bubble").textContent().catch(() => null);
+  if (!bubble || bubble.length < 40) problem("results: the Flight Director said nothing useful");
+  else note(`results: the Flight Director wrote ${bubble.length} characters`);
+
+  await checkScreen(page, "08-results", { mayScroll: true });
+
+  /* ---- the NASA sources panel, which is what earns the resource marks */
+  const sources = page.getByRole("button", { name: /Where the numbers come from/ }).first();
+  if ((await sources.count()) === 0) {
+    problem("results: no 'Where the numbers come from' footnote");
+  } else {
+    await sources.click();
+    await page.waitForTimeout(200);
+    const links = await page.locator(".dialog a[href*='nasa.gov']").count();
+    if (links < 5) problem(`sources panel: only ${links} NASA links`);
+    else note(`sources panel: ${links} NASA links`);
+    await shoot(page, "09-nasa-sources");
+  }
+
+  await browser.close();
+
+  /* ---------------------------------------------------------------- verdict */
+  console.log(`\n${notes.length} checks passed.`);
+  if (problems.length > 0) {
+    console.log(`\n${problems.length} PROBLEM(S):`);
+    for (const message of problems) console.log(`  - ${message}`);
+    process.exit(1);
+  }
+  console.log(`Screenshots in ${OUT}/. No problems found.\n`);
+};
+
+run().catch((error) => {
+  console.error("\nmeasure crashed:", error.message);
+  process.exit(1);
+});

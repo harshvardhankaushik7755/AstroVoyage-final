@@ -43,7 +43,8 @@ export default function DesignLab() {
   const loadPreset = useGame((state) => state.loadPreset);
   const go = useGame((state) => state.go);
 
-  const [open, setOpen] = useState<PartGroup | null>("body");
+  /** Which group is open. Fuel is the seventh, so only one thing is ever open. */
+  const [open, setOpen] = useState<PartGroup | "fuel" | null>("body");
   const bodyRef = useRef<HTMLDivElement>(null);
 
   if (!scenario) return null;
@@ -114,8 +115,8 @@ export default function DesignLab() {
     <div className="screen">
       <div className="spread">
         <div>
-          <h1>Design Lab</h1>
-          <p className="lead">
+          <h2>Design Lab</h2>
+          <p className="lead" style={{ margin: 0 }}>
             {scenario.name} — {scenario.goal}. You have <strong>${scenario.budget}M</strong>.
           </p>
         </div>
@@ -185,11 +186,18 @@ export default function DesignLab() {
 
           {/* ---------------------------------------------- fuel */}
           <div className="acc">
-            <div className="acc-head" style={{ cursor: "default" }}>
-              <span aria-hidden="true">⛽</span>
+            <button
+              className="acc-head"
+              aria-expanded={open === "fuel"}
+              onClick={() => setOpen(open === "fuel" ? null : "fuel")}
+            >
+              <span className="acc-caret" aria-hidden="true">
+                ▶
+              </span>
               <span>Fuel</span>
               <span className="acc-chosen mono">{design.fuelKg} kg</span>
-            </div>
+            </button>
+            {open === "fuel" && (
             <div className="acc-body fuel">
               <input
                 className="slider"
@@ -218,6 +226,7 @@ export default function DesignLab() {
                 minimum, as a safety margin.
               </p>
             </div>
+            )}
           </div>
         </div>
 
@@ -226,22 +235,17 @@ export default function DesignLab() {
           <div className="panel">
             <div className="panel-title">Your spacecraft</div>
             <ResourceBars check={check} />
-            <p className="tiny" style={{ margin: "10px 0 0" }}>
-              Keep every bar from filling up. Science it can collect:{" "}
-              <strong>{check.science} points</strong>, of which{" "}
-              <strong>{check.scienceHome}</strong> would reach Earth.
+            <p className="tiny" style={{ margin: "6px 0 8px" }}>
+              Science: <strong>{check.science}</strong> points, of which{" "}
+              <strong>{check.scienceHome}</strong> reach Earth.
             </p>
-          </div>
-
-          <div className="panel">
-            <div className="panel-title">Launch checks</div>
             <Checks check={check} />
           </div>
 
           <div className="panel">
             <button
-              className="btn btn--primary btn--big"
-              style={{ width: "100%" }}
+              className="btn btn--primary"
+              style={{ width: "100%", fontSize: 16, padding: "10px 14px" }}
               disabled={!check.allOk}
               onClick={() => go("launch")}
             >
@@ -249,15 +253,12 @@ export default function DesignLab() {
             </button>
             <button
               className="btn btn--small"
-              style={{ width: "100%", marginTop: 8 }}
+              style={{ width: "100%", marginTop: 6 }}
               onClick={loadPreset}
+              title="Fills in a design we have tested for this mission"
             >
               Load a design that works
             </button>
-            <p className="tiny" style={{ margin: "8px 0 0" }}>
-              Stuck? That button fills in a design we have tested for this mission, so you can fly it
-              and then come back and change things.
-            </p>
           </div>
         </div>
       </div>

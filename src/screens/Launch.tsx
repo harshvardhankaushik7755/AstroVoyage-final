@@ -32,6 +32,7 @@ export default function Launch() {
   const route = useGame((state) => state.route);
   const setLaunchMonth = useGame((state) => state.setLaunchMonth);
   const setRoute = useGame((state) => state.setRoute);
+  const launch = useGame((state) => state.launch);
   const go = useGame((state) => state.go);
 
   if (!scenario) return null;
@@ -39,6 +40,8 @@ export default function Launch() {
   const check = runChecks(design, scenario, route);
   const windowOpen = isWindowOpen(scenario, launchMonth);
   const canLaunch = check.allOk && windowOpen;
+  // The route only moves the fuel check; the other four were settled in the lab.
+  const otherChecksOk = check.checks.every((item) => item.id === "fuel" || item.ok);
 
   /* Two years, shown a year at a time. */
   const years = [0, 1];
@@ -47,8 +50,8 @@ export default function Launch() {
     <div className="screen">
       <div className="spread">
         <div>
-          <h1>Launch</h1>
-          <p className="lead">
+          <h2>Launch</h2>
+          <p className="lead" style={{ margin: 0 }}>
             Pick a month, then choose the route. {scenario.name} — {scenario.goal}.
           </p>
         </div>
@@ -57,7 +60,7 @@ export default function Launch() {
         </button>
       </div>
 
-      <div style={{ marginBottom: 12 }}>
+      <div style={{ margin: "8px 0" }}>
         <MissionSummary design={design} />
       </div>
 
@@ -89,11 +92,6 @@ export default function Launch() {
                       aria-label={`${monthLabel(month)}${open ? ", launch window open" : ", no launch window"}`}
                     >
                       {monthShortLabel(month)}
-                      {open && (
-                        <span aria-hidden="true" style={{ display: "block", fontSize: 10 }}>
-                          ●
-                        </span>
-                      )}
                     </button>
                   );
                 })}
@@ -123,12 +121,14 @@ export default function Launch() {
                   >
                     <div className="spread">
                       <strong>{spec.label}</strong>
-                      <span className="chip mono">{tripDays(scenario, id)} days</span>
+                      <span className="row row--tight">
+                        <span className="chip mono">{tripDays(scenario, id)} days</span>
+                        <span className="chip mono">
+                          {requiredDeltaV(scenario, id).toFixed(2)} km/s
+                        </span>
+                      </span>
                     </div>
                     <div className="tiny">{spec.note}</div>
-                    <div className="tiny mono">
-                      Needs {requiredDeltaV(scenario, id).toFixed(2)} km/s in total
-                    </div>
                   </button>
                 );
               })}
@@ -136,8 +136,24 @@ export default function Launch() {
           </div>
 
           <div className="panel">
-            <div className="panel-title">Launch checks</div>
-            <Checks check={check} />
+            <div className="panel-title">
+              Fuel for this route
+              {otherChecksOk ? (
+                <span className="chip chip--good" style={{ marginLeft: "auto" }}>
+                  the other 4 checks passed
+                </span>
+              ) : (
+                <span className="chip chip--bad" style={{ marginLeft: "auto" }}>
+                  something else needs fixing
+                </span>
+              )}
+            </div>
+            <Checks check={check} only={["fuel"]} />
+            {!otherChecksOk && (
+              <p className="tiny" style={{ margin: "8px 0 0" }}>
+                Go back to the Design Lab to see what else is wrong.
+              </p>
+            )}
           </div>
 
           <div className="panel">
@@ -145,7 +161,7 @@ export default function Launch() {
               className="btn btn--primary btn--big"
               style={{ width: "100%" }}
               disabled={!canLaunch}
-              onClick={() => go("control")}
+              onClick={() => launch()}
             >
               {canLaunch
                 ? "Launch 🚀"

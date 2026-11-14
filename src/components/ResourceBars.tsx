@@ -5,7 +5,7 @@
  * have is used up, so the rule is always "keep the bar from filling". A bar
  * past the end is the thing stopping the launch.
  */
-import type { CheckResult } from "../physics/checks";
+import type { CheckId, CheckResult } from "../physics/checks";
 
 interface Bar {
   id: string;
@@ -92,23 +92,34 @@ export function ResourceBars({ check }: { check: CheckResult }) {
  * "Ready"/"Problem" sits next to the symbol so the answer never depends on
  * telling red from green.
  */
-export function Checks({ check }: { check: CheckResult }) {
+export function Checks({ check, only }: { check: CheckResult; only?: CheckId[] }) {
+  // The Launch screen shows just the fuel check, because the route is the only
+  // thing it can change. Everything else was settled in the Design Lab.
+  const shown = only ? check.checks.filter((item) => only.includes(item.id)) : check.checks;
+
   return (
     <div className="checks">
-      {check.checks.map((item) => (
+      {shown.map((item) => (
         <div className={`check ${item.ok ? "check--ok" : "check--bad"}`} key={item.id}>
           <span className="check-mark" aria-hidden="true">
             {item.ok ? "✅" : "⚠️"}
           </span>
-          <div>
-            <div className="check-name">
-              {item.label}{" "}
-              <span className={`chip ${item.ok ? "chip--good" : "chip--bad"}`}>
-                {item.ok ? "Ready" : "Problem"}
-              </span>
+          {item.ok ? (
+            /* Passing: one line. The word "Ready" sits next to the tick so the
+               answer never depends on telling red from green. */
+            <div className="check-line">
+              <span className="check-name">{item.label}</span>
+              <span className="sr-only">Ready. {item.message}</span>
+              <span className="check-short mono">{item.short}</span>
             </div>
-            <div className="check-msg">{item.message}</div>
-          </div>
+          ) : (
+            <div>
+              <div className="check-name">
+                {item.label} <span className="chip chip--bad">Problem</span>
+              </div>
+              <div className="check-msg">{item.message}</div>
+            </div>
+          )}
         </div>
       ))}
     </div>

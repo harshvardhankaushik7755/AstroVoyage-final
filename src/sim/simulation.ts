@@ -127,6 +127,8 @@ export interface SimState {
   powerFactor: number;
   /** Share of the science that reaches Earth, 0 to 1. */
   signalFactor: number;
+  /** What the signal was at launch, so the gauge can mark what has been lost. */
+  startSignalFactor: number;
 
   scienceMax: number;
   /** Share of the science still collectable, after penalties and bonuses. */
@@ -509,6 +511,7 @@ export function createSimulation(
     fuelKg: design.fuelKg,
     powerFactor: 1,
     signalFactor: designScienceShare(design.antennaId, scenario),
+    startSignalFactor: designScienceShare(design.antennaId, scenario),
 
     scienceMax: totalScience(design),
     scienceFactor: 1,

@@ -1,0 +1,33 @@
+{
+  "_note": "The Flight Director's words. Rules in src/ai/flightDirector.ts choose which ones to use, so the text can be rewritten here without touching any code.",
+
+  "outcome": {
+    "orbit": "You got there. The spacecraft is in orbit around {target} and the science is coming home.",
+    "flyby": "The spacecraft reached {target} but could not stop, so it carried on past. Everything else about the mission worked.",
+    "lost": "We lost the spacecraft on the way. That happens to real missions too, and the design was not the only reason."
+  },
+
+  "praise": {
+    "threeStars": "This is how a mission is supposed to go: it arrived, it did nearly all the science it set out to do, and it came in under budget.",
+    "cheap": "You brought it in with ${moneyLeft}M to spare. That is the Mangalyaan lesson — a cheap mission that works beats an expensive one that nearly does.",
+    "fullScience": "Almost all the science got home, which means the antenna was the right size for the distance.",
+    "survived": "It survived everything the trip threw at it, which is worth as much as the science."
+  },
+
+  "tips": {
+    "antenna": "Only {sciencePercent}% of your science reached Earth. At {target} the small antenna is a bottleneck — the large dish sends ten times as much, and it only costs $10M more.",
+    "power": "Power was tight at {target}, where sunlight is {sunlightPercent}% of what it is at Earth. Bigger panels, or a nuclear battery, would give the instruments room to breathe.",
+    "fuel": "You arrived with {fuelLeft} kg of fuel. That is a thin margin — one more course correction and there would have been nothing left for the braking burn.",
+    "noFuel": "There was not enough fuel for the braking burn. Next time load more, or fly a bigger rocket so the spacecraft has less work to do.",
+    "risk": "You took {riskPercent}% risk into the arrival. Every ignored problem adds to that number, and it is all cashed in at once on the last day.",
+    "instruments": "You carried {instrumentCount} instrument{plural}. There was room and money for more, and more instruments means more science.",
+    "budgetTight": "You spent almost all of the money. Money left over is worth points on its own, so a cheaper part is sometimes the better part.",
+    "safeChoices": "You took the safe option every time, which is why it arrived. Just remember the green opportunity cards are usually worth the risk."
+  },
+
+  "signOff": {
+    "good": "Good flying. Try a harder mission.",
+    "mixed": "A solid mission. Change one thing and fly it again.",
+    "bad": "Have another go — you know what went wrong now, and that is most of the job."
+  }
+}
