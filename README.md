@@ -85,6 +85,13 @@ See [NASA_RESOURCES.md](NASA_RESOURCES.md) for every NASA resource used and what
 - **A real launch calendar** with the window band, and a fast/slow route trade.
 - **A live flight map** — seeded starfield with a Milky Way band, the orbits, the transfer, and a
   trail behind the spacecraft. A scale bar measured from the map's own AU-to-pixel factor.
+- **Worlds drawn as lit spheres, not discs.** The bright side always faces the Sun, worked out from
+  where the Sun actually is on the map — the same reason the Moon has phases. Mars carries its
+  polar cap, Jupiter its cloud bands and the Great Red Spot, the Moon its craters.
+- **Sound, built from numbers rather than files.** Six short sounds — launch, alert, answer,
+  arrival — are played by the browser's own oscillator from notes in `sounds.json`, so the game is
+  still one small download. It starts **off**: a page that makes a noise before you ask is rude,
+  and a judge may be in a quiet room.
 - **18 challenges**, 3 to 5 per mission, drawn by chance and filtered by your design: solar storms,
   dust on the panels, course drift, lost signal, instrument faults, debris, micrometeoroids,
   sunlight pressure, planetary protection, safe mode, a busy Deep Space Network, a software bug,
@@ -113,7 +120,7 @@ See [NASA_RESOURCES.md](NASA_RESOURCES.md) for every NASA resource used and what
 
 ```bash
 npm run dev       # dev server
-npm test          # 258 tests
+npm test          # 272 tests
 npm run build     # type-check + production build
 npm run measure   # plays the whole game in a headless browser and checks it
 ```
@@ -127,15 +134,16 @@ another size with `npm run measure -- 390 844`. First run needs the browser: `np
 
 ```
 src/data/       parts, scenarios, events, settings, realMissions, glossary, nasaSources, sky,
-                homeSystem
+                homeSystem, planets, sounds
                 game.ts — the one place the JSON is read and typed
 src/physics/    rocketEquation, power, comms, windows, checks, goals, partEffects, missionFacts
 src/sim/        simulation — the cruise engine; score; shipLayout; mapScale; sky; homeSystem;
                 context; demo
 src/store/      gameStore.ts — the only place game state lives
 src/screens/    Home, ChooseMission, DesignLab, Launch, MissionControl, Result
-src/components/ ResourceBars, Gauge, Spacecraft, Starfield, SolarSystem, Beat, Timeline,
-                Glossary, Provenance
+src/components/ ResourceBars, Gauge, Spacecraft, Planet, Starfield, SolarSystem, Beat,
+                Timeline, Glossary, Provenance
+src/audio.ts    every sound, built from notes by the browser's own oscillator
 src/styles.css  one stylesheet, plain CSS, all colour in variables on :root
 ```
 

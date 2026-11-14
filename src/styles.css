@@ -296,6 +296,10 @@ a {
 }
 
 .btn--primary:hover:not(:disabled) {
+  /* The gradient has to be restated: `.btn:hover:not(:disabled)` is the more
+     specific selector, so without this every primary button turned dark navy
+     under the pointer. */
+  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
   filter: brightness(1.08);
   border-color: transparent;
 }
@@ -1008,6 +1012,14 @@ a {
   background: rgb(90 169 255 / 18%);
 }
 
+/* Chosen AND open: keep the green that says the window is open, and let the
+   ring alone say it is the month you picked. */
+.cal--open.cal--chosen {
+  background: rgb(61 220 151 / 22%);
+  border-color: rgb(61 220 151 / 70%);
+  color: var(--good);
+}
+
 .cal:disabled {
   opacity: 0.35;
   cursor: not-allowed;
@@ -1061,6 +1073,20 @@ a {
   border-radius: var(--radius-sm);
   background: var(--bg-2);
   font-size: 13px;
+}
+
+/* The cockpit's column is 268px wide, and the wide form wraps to a height
+   that gets cut off at the bottom of the screen. */
+.summary--tight {
+  gap: 6px;
+  padding: 5px 8px;
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.summary--tight .chip {
+  font-size: 11px;
+  padding: 2px 7px;
 }
 
 .summary-ship {
@@ -1133,6 +1159,15 @@ a {
   gap: 10px;
   flex: 1;
   min-height: 0;
+}
+
+/* The gauges, the plan button and the spacecraft strip. It scrolls inside
+   itself rather than being cut off by the cockpit's fixed height — a clipped
+   gauge is worse than a short scrollbar. */
+.control-side {
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 2px;
 }
 
 .mapwrap {

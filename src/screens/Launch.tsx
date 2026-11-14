@@ -142,7 +142,7 @@ export default function Launch() {
               Fuel for this route
               {otherChecksOk ? (
                 <span className="chip chip--good" style={{ marginLeft: "auto" }}>
-                  the other 4 checks passed
+                  the other {check.checks.length - 1} checks passed
                 </span>
               ) : (
                 <span className="chip chip--bad" style={{ marginLeft: "auto" }}>

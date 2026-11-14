@@ -15,6 +15,7 @@ import glossaryJson from "./glossary.json";
 import nasaSourcesJson from "./nasaSources.json";
 import skyJson from "./sky.json";
 import homeSystemJson from "./homeSystem.json";
+import planetsJson from "./planets.json";
 
 /* ------------------------------------------------------------------ parts */
 
@@ -390,6 +391,39 @@ export interface HomeSystemConfig {
 }
 
 export const homeSystem = homeSystemJson as unknown as HomeSystemConfig;
+
+/* ------------------------------------------------- how the worlds are drawn */
+
+/** The character that makes one world look unlike another. */
+export interface WorldLook {
+  bands?: number;
+  bandColor?: string;
+  polarCap?: boolean;
+  capColor?: string;
+  craters?: number;
+  craterColor?: string;
+  spot?: boolean;
+  spotColor?: string;
+}
+
+export interface PlanetsConfig {
+  light: {
+    offsetShare: number;
+    highlight: number;
+    shadow: number;
+    glowShare: number;
+    glowOpacity: number;
+  };
+  sun: { color: string; coreColor: string; radius: number; glowRadius: number };
+  earth: { color: string; radius: number; smallRadius: number; capColor: string };
+  /** Keyed by scenario id, because each mission has one target. */
+  worlds: Record<string, WorldLook>;
+}
+
+export const planets = planetsJson as unknown as PlanetsConfig;
+
+/** How this mission's target is drawn. An unknown world is simply plain. */
+export const worldLook = (scenarioId: string): WorldLook => planets.worlds[scenarioId] ?? {};
 
 /* ---------------------------------------------------------------- lookups */
 

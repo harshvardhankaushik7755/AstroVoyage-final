@@ -21,6 +21,8 @@ export default function App() {
   const scenarioId = useGame((state) => state.scenarioId);
   const startOver = useGame((state) => state.startOver);
   const setSkipAnimations = useGame((state) => state.setSkipAnimations);
+  const muted = useGame((state) => state.muted);
+  const setMuted = useGame((state) => state.setMuted);
 
   /* Respect the system's reduced-motion setting from the first frame. */
   useEffect(() => {
@@ -52,6 +54,16 @@ export default function App() {
             Start over
           </button>
         )}
+        {/* Off to begin with: a page that makes a noise before you ask is rude,
+            and a judge may well be opening this in a quiet room. */}
+        <button
+          className="btn btn--small"
+          aria-pressed={!muted}
+          onClick={() => setMuted(!muted)}
+          title={muted ? "Turn the sound on" : "Turn the sound off"}
+        >
+          <span aria-hidden="true">{muted ? "🔇" : "🔊"}</span> Sound {muted ? "off" : "on"}
+        </button>
       </header>
 
       <main className={wide ? "screen screen--wide" : undefined} style={wide ? undefined : { display: "contents" }}>

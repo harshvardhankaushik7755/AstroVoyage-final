@@ -11,9 +11,11 @@ interface Props {
   design: Design;
   /** The live fuel figure, when the mission is flying. Falls back to the loaded amount. */
   fuelKg?: number;
+  /** For the cockpit's 268px column, where the wide form would be cut off. */
+  tight?: boolean;
 }
 
-export default function MissionSummary({ design, fuelKg }: Props) {
+export default function MissionSummary({ design, fuelKg, tight = false }: Props) {
   const body = findBody(design.bodyId);
   const power = findPower(design.powerId);
   const antenna = findAntenna(design.antennaId);
@@ -32,9 +34,9 @@ export default function MissionSummary({ design, fuelKg }: Props) {
   ].filter(Boolean);
 
   return (
-    <div className="summary">
+    <div className={`summary${tight ? " summary--tight" : ""}`}>
       <span className="summary-ship">
-        <ShipSchematic design={design} size={40} />
+        <ShipSchematic design={design} size={tight ? 30 : 40} />
       </span>
       <span className="summary-parts">{bits.join(" · ")}</span>
       <span className="chip mono">{Math.round(fuel)} kg fuel</span>

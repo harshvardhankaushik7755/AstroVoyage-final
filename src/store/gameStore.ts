@@ -10,6 +10,7 @@ import { create } from "zustand";
 import type { Design, PartGroup, Route, Scenario } from "../data/game";
 import { findBody, findScenario, missionGoal, parts, presetDesign } from "../data/game";
 import { withGoalInstrument } from "../physics/goals";
+import { playSound, setMutedForSound } from "../audio";
 import { designFlags } from "../physics/checks";
 import type { SimState } from "../sim/simulation";
 import { createSimulation, resolveEvent, resolveInsertion, step } from "../sim/simulation";
@@ -199,6 +200,7 @@ export const useGame = create<GameState>((set, get) => ({
       ),
       screen: "control",
     });
+    playSound("launch");
   },
 
   startDemo: () => {
@@ -254,7 +256,12 @@ export const useGame = create<GameState>((set, get) => ({
   },
 
   setSkipAnimations: (skipAnimations) => set({ skipAnimations }),
-  setMuted: (muted) => set({ muted }),
+  setMuted: (muted) => {
+    setMutedForSound(muted);
+    set({ muted });
+    // Play something the moment it is switched on, so the button proves itself.
+    if (!muted) playSound("click");
+  },
 }));
 
 /** The chosen mission, or undefined before one is picked. */

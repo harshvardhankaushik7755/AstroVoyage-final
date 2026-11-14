@@ -1,0 +1,28 @@
+{
+  "_note": "How each world is drawn on the flight map. Nothing here changes the physics; it is what the worlds look like, kept out of the screen code so a colour is never written twice.",
+
+  "light": {
+    "_note": "How far the bright spot sits from the middle of a world, as a share of its radius. The direction is worked out: the lit side always faces the Sun, which is why the target changes face as it comes round.",
+    "offsetShare": 0.34,
+    "highlight": 0.55,
+    "shadow": 0.5,
+    "glowShare": 1.7,
+    "glowOpacity": 0.16
+  },
+
+  "sun": { "color": "#ffd27d", "coreColor": "#fff4d0", "radius": 13, "glowRadius": 24 },
+
+  "earth": {
+    "_note": "Earth is drawn twice: large when the mission orbits it, small when it is only the place you left.",
+    "color": "#4b86d8",
+    "radius": 11,
+    "smallRadius": 6,
+    "capColor": "#eaf2ff"
+  },
+
+  "worlds": {
+    "moon": { "_note": "Grey, cratered, no air.", "craters": 4, "craterColor": "#9a9a9a" },
+    "mars": { "_note": "A polar cap you can see from Earth with a small telescope.", "polarCap": true, "capColor": "#f2f7ff" },
+    "jupiter": { "_note": "Banded clouds, and the Great Red Spot.", "bands": 4, "bandColor": "#b07544", "spot": true, "spotColor": "#c0603f" }
+  }
+}

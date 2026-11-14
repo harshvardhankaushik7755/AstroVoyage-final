@@ -118,3 +118,33 @@ tightening the check rows.
 project page, deployed link).
 
 **For Kunal.** Still no git remote. That and the deployed link are the two things only you can do.
+
+## 2026-11-14 — Stage 15: a UI pass, lit worlds, and sound
+
+**Three real bugs found and fixed.**
+- *Every primary button went dark navy under the pointer.* `.btn:hover:not(:disabled)` is a more
+  specific selector than `.btn--primary`, so the gradient lost. It affected every main button in
+  the game — including **Launch**, which looked disabled when it was not.
+- *The launch calendar hid its own green.* The one open month is usually also the chosen one, and
+  `.cal--chosen` painted over the green that says the window is open.
+- *"the other 4 checks passed" on the Launch screen* had been wrong since the goal check made six.
+  It counts now.
+
+**Built.**
+- `src/components/Planet.tsx` + `src/data/planets.json` — worlds are lit spheres, not flat discs.
+  The bright side faces the Sun, worked out from where the Sun actually is on the map, so the
+  target changes face as it comes round. Mars has its polar cap, Jupiter its bands and Red Spot,
+  the Moon its craters.
+- `src/audio.ts` + `src/data/sounds.json` — six sounds built from notes by the browser's own
+  oscillator. No audio files, so the download does not grow. Off by default, with the toggle in
+  the top bar. The store already had a `muted` flag that nothing used; it is wired now.
+- The cockpit's right column no longer cuts off the spacecraft strip: a compact form for the
+  268px column, measured at 22px over and trimmed by 24px.
+
+**Numbers.** 272 unit tests in 14 files, all passing. `npm run build` passes. `npm run measure`
+passes clean at 1366×650 and 390×844. Hover, the sound toggle and the goal mechanic each checked
+in a real browser, not only in tests.
+
+**Still not done.** The submission pack: the 30-second video, the project page, a deployed link.
+
+**For Kunal.** NASA resources next, as agreed. Still no git remote.

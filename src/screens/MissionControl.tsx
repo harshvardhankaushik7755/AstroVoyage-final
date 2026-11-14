@@ -14,7 +14,7 @@
  *    rides the orbit it reached. Nothing in space stops.
  */
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { settings } from "../data/game";
+import { planets, settings, worldLook } from "../data/game";
 import type { Beat as BeatKind } from "../sim/context";
 import { beatFor, damageFor, optionPart } from "../sim/context";
 import { mapGeometry } from "../sim/mapScale";
@@ -31,10 +31,12 @@ import Beat from "../components/Beat";
 import Dialog from "../components/Dialog";
 import Gauge from "../components/Gauge";
 import MissionSummary from "../components/MissionSummary";
+import Planet from "../components/Planet";
 import Starfield from "../components/Starfield";
 import Timeline from "../components/Timeline";
 import { ShipSchematic, ShipSprite } from "../components/Spacecraft";
 import { reducedMotion } from "../App";
+import { playSound } from "../audio";
 import { useGame } from "../store/gameStore";
 
 /** Which gauge each of the engine's own words belongs to. */
@@ -117,6 +119,8 @@ export default function MissionControl() {
     if (!pendingKey || !sim?.pendingEvent) return;
     if (beatShownFor.current === pendingKey) return;
     beatShownFor.current = pendingKey;
+    // Two beeps, the moment the trouble arrives. Silent unless sound is on.
+    playSound("alert");
     if (skipAnimations || reducedMotion()) return;
     setBeat(beatFor(sim.pendingEvent.defId));
   }, [pendingKey, sim?.pendingEvent, skipAnimations]);
@@ -281,8 +285,18 @@ export default function MissionControl() {
             {/* ---- the central body */}
             {sim.config.centralBody === "sun" ? (
               <g>
-                <circle cx={geometry.cx} cy={geometry.cy} r={13} fill="#ffd27d" />
-                <circle cx={geometry.cx} cy={geometry.cy} r={22} fill="#ffd27d" opacity={0.18} />
+                <Planet
+                  id="map-sun"
+                  x={geometry.cx}
+                  y={geometry.cy}
+                  r={planets.sun.radius}
+                  color={planets.sun.color}
+                  coreColor={planets.sun.coreColor}
+                  glowRadius={planets.sun.glowRadius}
+                  lightX={geometry.cx}
+                  lightY={geometry.cy}
+                  emissive
+                />
                 <text
                   x={geometry.cx}
                   y={geometry.cy + 34}
@@ -294,8 +308,19 @@ export default function MissionControl() {
               </g>
             ) : (
               <g>
-                <circle cx={geometry.cx} cy={geometry.cy} r={11} fill="#4b86d8" />
-                <circle cx={geometry.cx} cy={geometry.cy} r={11} fill="#2f6bbd" opacity={0.5} />
+                {/* On a Moon mission Earth is the centre, and the Sun is off
+                    to the upper left, outside the picture. */}
+                <Planet
+                  id="map-earth-big"
+                  x={geometry.cx}
+                  y={geometry.cy}
+                  r={planets.earth.radius}
+                  color={planets.earth.color}
+                  polarCap
+                  capColor={planets.earth.capColor}
+                  lightX={geometry.cx - geometry.cx}
+                  lightY={geometry.cy - geometry.cy * 2}
+                />
                 <text
                   x={geometry.cx}
                   y={geometry.cy + 30}
@@ -310,7 +335,15 @@ export default function MissionControl() {
             {/* ---- the departure body, when it is not the centre */}
             {sim.config.centralBody === "sun" && (
               <g>
-                <circle cx={geometry.earth.x} cy={geometry.earth.y} r={6} fill="#4b86d8" />
+                <Planet
+                  id="map-earth"
+                  x={geometry.earth.x}
+                  y={geometry.earth.y}
+                  r={planets.earth.smallRadius}
+                  color={planets.earth.color}
+                  lightX={geometry.cx}
+                  lightY={geometry.cy}
+                />
                 <text
                   x={geometry.earth.x}
                   y={geometry.earth.y - 11}
@@ -322,20 +355,17 @@ export default function MissionControl() {
               </g>
             )}
 
-            {/* ---- the target */}
+            {/* ---- the target, lit from wherever the light actually is */}
             <g>
-              <circle
-                cx={geometry.target.x}
-                cy={geometry.target.y}
+              <Planet
+                id="map-target"
+                x={geometry.target.x}
+                y={geometry.target.y}
                 r={9}
-                fill={sim.config.color}
-              />
-              <circle
-                cx={geometry.target.x}
-                cy={geometry.target.y}
-                r={15}
-                fill={sim.config.color}
-                opacity={0.16}
+                color={sim.config.color}
+                lightX={geometry.cx}
+                lightY={geometry.cy}
+                {...worldLook(sim.config.scenarioId)}
               />
               <text
                 x={geometry.target.x}
@@ -553,7 +583,7 @@ export default function MissionControl() {
         </div>
 
         {/* =================================================== the gauges */}
-        <div className="col" style={{ minHeight: 0 }}>
+        <div className="col control-side">
           <div className="gauges">
             <Gauge
               icon="⛽"
@@ -622,7 +652,7 @@ export default function MissionControl() {
             {showPlan ? "Hide the planned path" : "Show the planned path"}
           </button>
 
-          <MissionSummary design={sim.design} fuelKg={sim.fuelKg} />
+          <MissionSummary design={sim.design} fuelKg={sim.fuelKg} tight />
         </div>
       </div>
 

@@ -1,0 +1,37 @@
+{
+  "_note": "Every sound the game makes, as notes. There are no audio files: the browser builds each one from these numbers, so the whole game is still one download with nothing to wait for. freq is hertz, start and length are seconds, gain is 0 to 1.",
+
+  "masterGain": 0.18,
+  "waveType": "triangle",
+
+  "sounds": {
+    "click": [{ "freq": 520, "start": 0, "length": 0.05, "gain": 0.5 }],
+
+    "launch": [
+      { "freq": 110, "start": 0, "length": 0.5, "gain": 0.9, "sweepTo": 320 },
+      { "freq": 220, "start": 0.08, "length": 0.45, "gain": 0.5, "sweepTo": 540 }
+    ],
+
+    "alert": [
+      { "freq": 740, "start": 0, "length": 0.11, "gain": 0.7 },
+      { "freq": 740, "start": 0.17, "length": 0.11, "gain": 0.7 }
+    ],
+
+    "good": [
+      { "freq": 523, "start": 0, "length": 0.1, "gain": 0.6 },
+      { "freq": 659, "start": 0.09, "length": 0.1, "gain": 0.6 },
+      { "freq": 784, "start": 0.18, "length": 0.18, "gain": 0.6 }
+    ],
+
+    "bad": [
+      { "freq": 300, "start": 0, "length": 0.16, "gain": 0.6, "sweepTo": 180 }
+    ],
+
+    "arrive": [
+      { "freq": 392, "start": 0, "length": 0.14, "gain": 0.6 },
+      { "freq": 523, "start": 0.13, "length": 0.14, "gain": 0.6 },
+      { "freq": 659, "start": 0.26, "length": 0.14, "gain": 0.6 },
+      { "freq": 880, "start": 0.39, "length": 0.3, "gain": 0.55 }
+    ]
+  }
+}
