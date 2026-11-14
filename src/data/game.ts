@@ -14,6 +14,7 @@ import realMissionsJson from "./realMissions.json";
 import glossaryJson from "./glossary.json";
 import nasaSourcesJson from "./nasaSources.json";
 import skyJson from "./sky.json";
+import homeSystemJson from "./homeSystem.json";
 
 /* ------------------------------------------------------------------ parts */
 
@@ -119,6 +120,8 @@ export interface Scenario {
   id: string;
   name: string;
   level: string;
+  /** One word for a pill: Easy, Medium, Hard. `level` is the long version. */
+  difficulty: string;
   goal: string;
   description: string;
   /** $M available to spend. */
@@ -324,6 +327,58 @@ export interface SkyConfig {
 }
 
 export const sky = skyJson as unknown as SkyConfig;
+
+/* -------------------------------------------------- the home page's orrery */
+
+/** A moon drawn going round a planet. */
+export interface HomeMoon {
+  label: string;
+  radius: number;
+  distance: number;
+  orbitDays: number;
+  color: string;
+}
+
+/** One planet on the home page's turning solar system. */
+export interface HomeBody {
+  id: string;
+  label: string;
+  /** Its real distance from the Sun, in astronomical units. */
+  au: number;
+  /** Its real orbit, in days. This is what sets how fast it turns. */
+  orbitDays: number;
+  radius: number;
+  color: string;
+  glowColor: string;
+  bandColor?: string;
+  bands?: number;
+  moon?: HomeMoon;
+}
+
+export interface HomeSystemConfig {
+  view: {
+    width: number;
+    height: number;
+    centerXShare: number;
+    centerYShare: number;
+    marginShare: number;
+  };
+  time: { earthLapSeconds: number; compression: number };
+  sun: { radius: number; coreColor: string; color: string; glowRadius: number; glowColor: string };
+  orbit: {
+    color: string;
+    opacity: number;
+    dash: string;
+    width: number;
+    innerShare: number;
+    outerShare: number;
+  };
+  bodies: HomeBody[];
+  probe: { label: string; au: number; orbitDays: number; size: number; color: string };
+  startAngles: Record<string, number>;
+}
+
+export const homeSystem = homeSystemJson as unknown as HomeSystemConfig;
 
 /* ---------------------------------------------------------------- lookups */
 

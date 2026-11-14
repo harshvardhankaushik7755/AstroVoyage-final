@@ -1,4 +1,4 @@
-# NASA resources used in Mission Architect
+# NASA resources used in AstroVoyage
 
 Space Apps judges score "use of NASA resources". Every link below was checked on 14 Nov 2026.
 Each row says which NASA resource a game number comes from, so the claim is checkable.

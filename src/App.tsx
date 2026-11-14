@@ -33,10 +33,19 @@ export default function App() {
   return (
     <div className="app">
       <header className="topbar">
-        <span className="brand">
-          <span className="brand-dot" aria-hidden="true" />
-          Mission Architect
-        </span>
+        {/* Home already shouts the name in letters the size of a planet, so up
+            here it gives the room to the badge judges look for instead. */}
+        {screen === "home" ? (
+          <span className="chip chip--badge">
+            <span aria-hidden="true">🛰️</span>
+            NASA Space Apps Challenge 2026
+          </span>
+        ) : (
+          <span className="brand">
+            <span className="brand-dot" aria-hidden="true" />
+            AstroVoyage
+          </span>
+        )}
         <span className="topbar-spacer" />
         {scenarioId && screen !== "home" && (
           <button className="btn btn--ghost btn--small" onClick={startOver}>

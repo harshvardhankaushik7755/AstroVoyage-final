@@ -1,0 +1,93 @@
+{
+  "_note": "The little solar system that turns on the home page. Every number lives here.",
+
+  "view": {
+    "_note": "The drawing's own coordinate box. CSS scales it; nothing here is in screen pixels.",
+    "width": 620,
+    "height": 400,
+    "centerXShare": 0.6,
+    "centerYShare": 0.44,
+    "marginShare": 0.04
+  },
+
+  "time": {
+    "_note": "Earth takes earthLapSeconds to go round. Every other body is timed from its REAL orbit in days, so the order is honest: Mercury-ward is fast, Jupiter is slow. compression squashes the range, because a true-to-scale Jupiter (11.9 Earth years) would sit still on a home page. At 0.55 the ordering is kept and the slowest lap is about 4x the fastest instead of 12x.",
+    "earthLapSeconds": 18,
+    "compression": 0.55
+  },
+
+  "sun": {
+    "radius": 24,
+    "coreColor": "#fff6cf",
+    "color": "#ffc451",
+    "glowRadius": 88,
+    "glowColor": "#ffb53d"
+  },
+
+  "orbit": {
+    "_note": "The dashed rings. Spacing is by the square root of the distance, so Earth is not swallowed by the Sun while Jupiter still stays in the picture.",
+    "color": "#56689c",
+    "opacity": 0.62,
+    "dash": "2 7",
+    "width": 1,
+    "innerShare": 0.3,
+    "outerShare": 1.14
+  },
+
+  "bodies": [
+    {
+      "id": "earth",
+      "label": "Earth",
+      "au": 1.0,
+      "orbitDays": 365.25,
+      "radius": 7,
+      "color": "#4ea3ff",
+      "glowColor": "#a8d4ff",
+      "moon": {
+        "label": "the Moon",
+        "radius": 2.2,
+        "distance": 12,
+        "orbitDays": 27.3,
+        "color": "#dde3f2"
+      }
+    },
+    {
+      "id": "mars",
+      "label": "Mars",
+      "au": 1.52,
+      "orbitDays": 687,
+      "radius": 5.5,
+      "color": "#e5744a",
+      "glowColor": "#ff9b70"
+    },
+    {
+      "id": "jupiter",
+      "label": "Jupiter",
+      "au": 5.2,
+      "orbitDays": 4333,
+      "radius": 14,
+      "color": "#d9a066",
+      "glowColor": "#f3cd99",
+      "bandColor": "#b57f4b",
+      "bands": 3
+    }
+  ],
+
+  "probe": {
+    "_note": "A spacecraft of our own, out between Mars and Jupiter on the long way round.",
+    "label": "a spacecraft on its way",
+    "au": 2.7,
+    "orbitDays": 1620,
+    "size": 9,
+    "color": "#dce8ff"
+  },
+
+  "startAngles": {
+    "_note": "Where everything sits at the moment the page opens, in degrees. Chosen so nothing overlaps on the first frame.",
+    "earth": 196,
+    "mars": 128,
+    "jupiter": 48,
+    "probe": 8,
+    "moon": 40
+  }
+}

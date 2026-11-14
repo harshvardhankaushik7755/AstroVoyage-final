@@ -43,3 +43,39 @@ passes clean at 1366×650 and at 390×844, five runs in a row across different r
 
 **For Kunal.** The deployed link is the one thing judges always click. `npm run build` produces
 `dist/`, which drops straight onto Netlify, Vercel or GitHub Pages.
+
+## 2026-11-14 — Stage 13: renamed to AstroVoyage, and a home page worth landing on
+
+**Built.** The game is now **AstroVoyage** everywhere: `index.html`, `package.json`, the top bar,
+`README.md`, `CLAUDE.md`, `NASA_RESOURCES.md`, `scripts/measure.mjs`. New home page, rebuilt to
+match the look Kunal asked for: a split hero with the wordmark and a turning solar system beside it,
+quick-jump pills straight into any of the three missions, three icon cards, a full-window starfield,
+and the NASA Space Apps badge where the brand used to sit.
+
+Files: `src/data/homeSystem.json` (new — every number for the orrery), `src/sim/homeSystem.ts` (new
+— the layout maths), `src/sim/homeSystem.test.ts` (new, 16 tests),
+`src/components/SolarSystem.tsx` (new), `src/screens/Home.tsx` (rewritten), `src/App.tsx`,
+`src/styles.css`, `src/data/scenarios.json` (+`difficulty`), `src/data/game.ts`.
+
+**Decisions I made on my own.**
+- *The orbits are honestly ordered but squashed.* Lap times come from each body's real orbit in
+  days, so Earth really does outrun Mars and Mars outruns Jupiter — but the range is compressed
+  (`time.compression`, 0.55) and the spacing goes by the square root of AU. At true scale Earth
+  sits inside the Sun and Jupiter takes eleven minutes a lap. Said plainly in the JSON and the
+  README; the honest version is a `<title>` the screen reader gets.
+- *No "Play as a team" button and no sound toggle*, though the reference page has both. We have
+  neither feature and a dead button on the front door is worse than a missing one.
+- *The tutorial is now the primary button*, not "Start a mission" — a judge landing cold should
+  have the shortest path pressed under their thumb.
+- *One CSS keyframe per ring instead of a rAF loop.* No animation code to run, and the stylesheet's
+  existing reduced-motion rule already freezes it — verified in a real browser, both states.
+
+**Numbers.** 233 unit tests in 11 files, all passing. `npm run build` passes. `npm run measure`
+passes clean at 1366×650 and 390×844. Home fits 603px in 603px — it has no headroom left, so
+anything added to it has to take something else out.
+
+**Still not done.** Sound; lit spheres with real phases; the submission pack (30-second video,
+project page, deployed link).
+
+**For Kunal.** The repo still has no git remote — creating it and pushing is the one thing I
+cannot do. After that, the deployed link.

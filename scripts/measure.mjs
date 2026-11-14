@@ -129,7 +129,7 @@ const run = async () => {
   });
   page.on("pageerror", (error) => problem(`page error: ${error.message}`));
 
-  console.log(`\nMission Architect — measuring at ${WIDTH}x${HEIGHT}\n`);
+  console.log(`\nAstroVoyage — measuring at ${WIDTH}x${HEIGHT}\n`);
 
   await page.goto(URL, { waitUntil: "networkidle" });
 

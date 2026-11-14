@@ -1,22 +1,31 @@
 /**
- * The front door. Two ways in: pick a mission, or go straight to the Moon
- * tutorial for anyone who would rather be shown than told.
+ * The front door.
+ *
+ * A split hero: what the game is on the left, a turning solar system on the
+ * right. Three ways in, in the order a stranger needs them — the tutorial
+ * first, then a free choice, then a jump straight to any of the three.
  */
+import SolarSystem from "../components/SolarSystem";
+import Starfield from "../components/Starfield";
+import { scenarios } from "../data/game";
 import { isDemo } from "../sim/demo";
 import { useGame } from "../store/gameStore";
 
 const STEPS = [
   {
-    title: "Design it",
-    text: "Choose a body, instruments, power, an antenna, an engine and a rocket. Watch the four bars.",
+    icon: "🎯",
+    title: "Pick a mission",
+    text: "Moon, Mars or Jupiter. Each one has a goal and a budget.",
   },
   {
-    title: "Launch it",
-    text: "Pick a month when the planet lines up with Earth, and choose a fast or a slow route.",
+    icon: "🛠️",
+    title: "Build your spacecraft",
+    text: "Choose the parts and watch the four bars: money, mass, power and fuel.",
   },
   {
-    title: "Fly it",
-    text: "Things go wrong on the way. You decide what to do, and find out how your mission scored.",
+    icon: "🚀",
+    title: "Launch and keep it alive",
+    text: "Pick a launch month, then handle the surprises on the way.",
   },
 ];
 
@@ -24,45 +33,84 @@ export default function Home() {
   const go = useGame((state) => state.go);
   const chooseScenario = useGame((state) => state.chooseScenario);
   const startDemo = useGame((state) => state.startDemo);
+  const skipAnimations = useGame((state) => state.skipAnimations);
   const demo = isDemo();
 
   return (
-    <div className="screen">
-      <div className="hero">
-        <h1>Mission Architect</h1>
-        <p className="hero-sub">
-          Build a real spacecraft, launch it to the Moon, Mars or Jupiter, and keep it alive all the
-          way there. The physics is real — the rocket equation, sunlight, signal delay and launch
-          windows all work the way they do in space.
-        </p>
-        <div className="row" style={{ justifyContent: "center" }}>
-          {demo ? (
-            <button className="btn btn--primary btn--big" onClick={startDemo}>
-              Start the demo mission (Mars) 🚀
+    <div className="screen home">
+      {/* The same seeded sky the flight map uses, stretched behind the page. */}
+      <svg
+        className="home-stars"
+        viewBox="0 0 1200 700"
+        preserveAspectRatio="xMidYMid slice"
+        aria-hidden="true"
+      >
+        <Starfield width={1200} height={700} idPrefix="home-sky" />
+      </svg>
+
+      <div className="hero hero--split">
+        <div className="hero-copy">
+          <p className="eyebrow">Space Mission Design Game</p>
+
+          <h1 className="wordmark">
+            Astro<span>Voyage</span>
+          </h1>
+
+          <p className="hero-sub">
+            You are the mission engineer. Pick a goal, build a spacecraft, launch it, and keep it
+            alive.
+          </p>
+
+          <div className="row hero-actions">
+            {demo ? (
+              <button className="btn btn--primary btn--big" onClick={startDemo}>
+                Start the demo mission (Mars) 🚀
+              </button>
+            ) : (
+              <button className="btn btn--primary btn--big" onClick={() => chooseScenario("moon")}>
+                Try the tutorial (Moon)
+              </button>
+            )}
+            <button className="btn btn--big" onClick={() => go("choose")}>
+              Start a mission
             </button>
-          ) : (
-            <button className="btn btn--primary btn--big" onClick={() => go("choose")}>
-              Start a mission 🚀
-            </button>
+          </div>
+
+          <div className="row row--tight jump">
+            <span className="tiny">Or jump in:</span>
+            {scenarios.map((scenario) => (
+              <button
+                className="btn jump-pill"
+                key={scenario.id}
+                onClick={() => chooseScenario(scenario.id)}
+              >
+                <span className="jump-dot" style={{ background: scenario.color }} aria-hidden="true" />
+                {scenario.target}
+                <span className="jump-level">· {scenario.difficulty}</span>
+              </button>
+            ))}
+          </div>
+
+          {demo && (
+            <p className="tiny demo-note">
+              Demo mode. That button picks Mars, loads a tested design and launches, so you are
+              watching a flying mission straight away. Four challenges arrive in the first minute,
+              including a green opportunity and the follow-up it causes later.
+            </p>
           )}
-          <button className="btn btn--big" onClick={() => chooseScenario("moon")}>
-            Try the tutorial (Moon)
-          </button>
         </div>
 
-        {demo && (
-          <p className="tiny" style={{ marginTop: 10 }}>
-            Demo mode. That button picks Mars, loads a tested design and launches, so you are
-            watching a flying mission straight away. Four challenges arrive in the first minute,
-            including a green opportunity and the follow-up it causes later.
-          </p>
-        )}
+        <div className="hero-art">
+          <SolarSystem still={skipAnimations} />
+        </div>
       </div>
 
       <div className="steps">
-        {STEPS.map((step, index) => (
+        {STEPS.map((step) => (
           <div className="panel step" key={step.title}>
-            <span className="step-n">{index + 1}</span>
+            <span className="step-icon" aria-hidden="true">
+              {step.icon}
+            </span>
             <h3>{step.title}</h3>
             <p className="lead" style={{ margin: 0 }}>
               {step.text}
@@ -71,14 +119,14 @@ export default function Home() {
         ))}
       </div>
 
-      <div className="panel">
-        <div className="panel-title">Built for the NASA Space Apps Challenge 2026</div>
-        <p className="lead" style={{ margin: 0 }}>
-          Challenge: <strong>Space Mission Design Game</strong>. Every formula in this game is the one
-          real engineers use, and every planet number comes from NASA. You can check any of them — look
-          for "Where the numbers come from" at the bottom of the next three screens.
-        </p>
-      </div>
+      <p className="lead home-foot">
+        Every choice has a cost. More power means more mass. More mass means more fuel. More fuel
+        means a bigger rocket.
+      </p>
+      <p className="tiny home-foot">
+        Real formulas, real NASA numbers. Look for "Where the numbers come from" on the next three
+        screens.
+      </p>
     </div>
   );
 }

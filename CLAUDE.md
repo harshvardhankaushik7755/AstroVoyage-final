@@ -1,4 +1,4 @@
-# Mission Architect — project context
+# AstroVoyage — project context
 
 A browser game for the NASA Space Apps Challenge 2026, challenge "Space Mission Design Game".
 The player picks a mission (Moon / Mars / Jupiter), designs a spacecraft under budget, mass, power and
