@@ -476,30 +476,34 @@ export default function MissionControl() {
                   </span>
                 </div>
 
-                <p className="event-explain">{event.explain}</p>
+                {/* The spacecraft sits beside the text, not under it, so three
+                    options still fit on the card without scrolling. */}
+                <div className="event-body">
+                  <div>
+                    <p className="event-explain">{event.explain}</p>
+                    {event.isProtected && event.protectedText && (
+                      <span className="chip chip--good">{event.protectedText}</span>
+                    )}
+                    <button className="event-why" onClick={() => setShowWhy((open) => !open)}>
+                      {showWhy ? "▾" : "▸"} Why does this happen?
+                    </button>
+                  </div>
 
-                {event.isProtected && event.protectedText && (
-                  <p className="chip chip--good">{event.protectedText}</p>
-                )}
-
-                <div className="event-ship">
-                  <ShipSchematic
-                    design={sim.design}
-                    size={112}
-                    hurtPart={hurtPart}
-                    damage={damage}
-                    aimPart={aimPart}
-                  />
-                  {hurtPart && (
-                    <span className="tiny">
-                      It happened to your {hurtPart === "body" ? "spacecraft body" : hurtPart}.
-                    </span>
-                  )}
+                  <div className="event-ship">
+                    <ShipSchematic
+                      design={sim.design}
+                      size={92}
+                      hurtPart={hurtPart}
+                      damage={damage}
+                      aimPart={aimPart}
+                    />
+                    {hurtPart && (
+                      <span className="tiny" style={{ textAlign: "center" }}>
+                        your {hurtPart === "body" ? "spacecraft body" : hurtPart}
+                      </span>
+                    )}
+                  </div>
                 </div>
-
-                <button className="event-why" onClick={() => setShowWhy((open) => !open)}>
-                  {showWhy ? "▾" : "▸"} Why does this happen?
-                </button>
 
                 {showWhy && (
                   <div className="event-teach">
@@ -540,8 +544,8 @@ export default function MissionControl() {
                   ))}
                 </div>
 
-                <p className="tiny" style={{ margin: "8px 0 0" }}>
-                  The mission clock is stopped. If the countdown runs out we take the safest option.
+                <p className="tiny" style={{ margin: "6px 0 0" }}>
+                  The clock is stopped. If it runs out we take the safest option.
                 </p>
               </div>
             </div>

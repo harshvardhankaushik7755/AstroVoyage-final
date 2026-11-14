@@ -12,6 +12,7 @@ import { findBody, findScenario, parts, presetDesign } from "../data/game";
 import { designFlags } from "../physics/checks";
 import type { SimState } from "../sim/simulation";
 import { createSimulation, resolveEvent, resolveInsertion, step } from "../sim/simulation";
+import { DEMO_SCENARIO, demoSchedule } from "../sim/demo";
 
 export type Screen = "home" | "choose" | "design" | "launch" | "control" | "result";
 
@@ -59,6 +60,8 @@ export interface GameState {
 
   /* ---- flying */
   launch: (seed?: number) => void;
+  /** Pick Mars, load the tested design, and fly a curated set of challenges. */
+  startDemo: () => void;
   /** Advance the flight by this many real seconds. */
   tick: (realSeconds: number) => void;
   setSpeed: (speed: number) => void;
@@ -181,6 +184,30 @@ export const useGame = create<GameState>((set, get) => ({
         [...designFlags(state.design, scenario)],
         useSeed,
       ),
+      screen: "control",
+    });
+  },
+
+  startDemo: () => {
+    const scenario = findScenario(DEMO_SCENARIO);
+    if (!scenario) return;
+    const design = presetDesign(scenario);
+    const sim = createSimulation(
+      design,
+      scenario,
+      scenario.preset.route,
+      scenario.preset.launchMonth,
+      [...designFlags(design, scenario)],
+      20261114,
+    );
+    set({
+      scenarioId: scenario.id,
+      design,
+      launchMonth: scenario.preset.launchMonth,
+      route: scenario.preset.route,
+      // The drawn schedule is replaced with the curated one, so a judge sees
+      // the same four cards every time.
+      sim: { ...sim, schedule: demoSchedule(sim.totalDays) },
       screen: "control",
     });
   },

@@ -923,7 +923,9 @@ a {
   min-height: 0;
 }
 
-.mapwrap svg {
+/* The map's own SVG only — a direct child. The challenge card sits inside
+   .mapwrap too, and its little spacecraft drawing must keep its own size. */
+.mapwrap > svg {
   display: block;
   width: 100%;
   height: 100%;
@@ -1093,14 +1095,16 @@ a {
 }
 
 .event {
-  width: min(560px, 100%);
+  /* Wide enough that a long option label stays on one line, which is what
+     decides whether three options fit on the card without scrolling. */
+  width: min(680px, 100%);
   max-height: 100%;
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: var(--radius);
   background: linear-gradient(180deg, var(--panel) 0%, var(--bg-2) 100%);
   box-shadow: var(--shadow);
-  padding: 14px 16px;
+  padding: 10px 14px;
 }
 
 .event--opportunity {
@@ -1145,13 +1149,23 @@ a {
 }
 
 .event-explain {
-  font-size: 14.5px;
+  font-size: 14px;
+  margin-bottom: 4px;
+}
+
+/* Explanation on the left, the spacecraft you built on the right. */
+.event-body {
+  display: grid;
+  grid-template-columns: 1fr 104px;
+  gap: 12px;
+  align-items: center;
+  margin: 2px 0 6px;
 }
 
 .event-ship {
   display: grid;
   place-items: center;
-  padding: 6px 0 2px;
+  gap: 2px;
 }
 
 .event-why {
@@ -1175,13 +1189,12 @@ a {
 
 .event-options {
   display: grid;
-  gap: 7px;
-  margin-top: 10px;
+  gap: 6px;
 }
 
 .option {
   text-align: left;
-  padding: 10px 12px;
+  padding: 6px 11px;
   border-radius: var(--radius-sm);
   border: 1px solid var(--line);
   background: var(--bg-2);
@@ -1203,7 +1216,7 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
-  margin-top: 6px;
+  margin-top: 4px;
 }
 
 /* =========================================================================
@@ -1529,6 +1542,17 @@ a {
     max-height: none;
   }
 
+  /* On a phone the map is only part of the screen, so a challenge card pinned
+     inside it would have to hide an option. Over the whole viewport instead. */
+  .eventwrap {
+    position: fixed;
+    z-index: 100;
+  }
+
+  .event {
+    max-height: 90vh;
+  }
+
   .score-big {
     font-size: 44px;
   }
@@ -1547,5 +1571,11 @@ a {
     grid-column: 2;
     text-align: left;
     min-width: 0;
+  }
+}
+
+@media (max-width: 560px) {
+  .event-body {
+    grid-template-columns: 1fr;
   }
 }

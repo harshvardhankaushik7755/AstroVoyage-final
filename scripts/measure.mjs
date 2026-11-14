@@ -20,6 +20,13 @@ const HEIGHT = Number(process.argv[3] ?? 650);
 const URL = process.env.MEASURE_URL ?? "http://localhost:5173/";
 const OUT = "screenshots";
 
+/**
+ * Under 800px every screen stacks into one column, so of course it scrolls.
+ * What matters on a phone is that nothing overflows sideways and the text
+ * stays readable.
+ */
+const PHONE = WIDTH < 800;
+
 const problems = [];
 const notes = [];
 
@@ -73,11 +80,13 @@ async function shoot(page, name) {
 async function checkScreen(page, name, { mayScroll = false } = {}) {
   const { scroll, view, pageScroll, pageView } = await pageHeight(page);
 
-  if (pageScroll > pageView + 2) {
+  // On a desktop the window is a fixed frame and only a screen scrolls inside
+  // it. On a phone the page scrolling is what people expect, so it is fine.
+  if (!PHONE && pageScroll > pageView + 2) {
     problem(`${name}: the window itself scrolls (${pageScroll}px in ${pageView}px)`);
   }
 
-  if (!mayScroll && scroll > view + 2) {
+  if (!mayScroll && !PHONE && scroll > view + 2) {
     problem(`${name}: scrolls — ${scroll}px of content in a ${view}px screen`);
   } else {
     note(`${name}: fits (${scroll}px in ${view}px)`);
@@ -85,6 +94,25 @@ async function checkScreen(page, name, { mayScroll = false } = {}) {
 
   const size = await smallestText(page);
   if (size < 11) problem(`${name}: text down to ${size}px, too small to read`);
+
+  /* ---- nothing may hang off the side, at any width */
+  const overflow = await page.evaluate(() => {
+    const wide = [];
+    for (const element of document.querySelectorAll("body *")) {
+      // Shapes inside an <svg> are clipped by its viewBox, so one drawn wider
+      // than the picture — the Milky Way band is — is not an overflow.
+      if (element.ownerSVGElement) continue;
+      const box = element.getBoundingClientRect();
+      if (box.width === 0) continue;
+      if (box.right > window.innerWidth + 2 || box.left < -2) {
+        wide.push(`${element.tagName.toLowerCase()}.${element.className || "?"}`);
+      }
+    }
+    return wide.slice(0, 3);
+  });
+  if (overflow.length > 0) {
+    problem(`${name}: hangs off the side — ${overflow.join(", ")}`);
+  }
 
   await shoot(page, name);
 }
@@ -181,7 +209,8 @@ const run = async () => {
     const card = page.locator(".event");
     if (await card.count()) {
       // Skip the beat if it is still running, then check the card is on screen.
-      const box = await card.boundingBox();
+      // On a phone the card deliberately covers the whole viewport instead.
+      const box = PHONE ? null : await card.boundingBox();
       const map = await page.locator(".mapwrap").boundingBox();
       if (box && map) {
         const inside =
@@ -194,6 +223,29 @@ const run = async () => {
 
       const chips = await page.locator(".event .option-chips .chip").count();
       if (chips === 0) problem("challenge card has no chips saying what the options cost");
+
+      /* Every option must be visible without scrolling the card. A card that
+         hides its third option hides a choice the player is entitled to. */
+      const cardFit = await page.evaluate(() => {
+        const card = document.querySelector(".event");
+        if (!card) return null;
+        const options = card.querySelectorAll(".option");
+        const last = options[options.length - 1];
+        return {
+          scrolls: card.scrollHeight > card.clientHeight + 2,
+          name: card.querySelector(".event-head strong")?.textContent ?? "?",
+          over: card.scrollHeight - card.clientHeight,
+          options: options.length,
+          lastVisible: last
+            ? last.getBoundingClientRect().bottom <= card.getBoundingClientRect().bottom + 2
+            : false,
+        };
+      });
+      if (cardFit?.scrolls || !cardFit?.lastVisible) {
+        problem(
+          `"${cardFit?.name}" hides options: ${cardFit?.options} options, ${cardFit?.over}px too tall`,
+        );
+      }
 
       if (answered === 0) {
         await shoot(page, "06-challenge");

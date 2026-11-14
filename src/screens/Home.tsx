@@ -2,6 +2,7 @@
  * The front door. Two ways in: pick a mission, or go straight to the Moon
  * tutorial for anyone who would rather be shown than told.
  */
+import { isDemo } from "../sim/demo";
 import { useGame } from "../store/gameStore";
 
 const STEPS = [
@@ -22,6 +23,8 @@ const STEPS = [
 export default function Home() {
   const go = useGame((state) => state.go);
   const chooseScenario = useGame((state) => state.chooseScenario);
+  const startDemo = useGame((state) => state.startDemo);
+  const demo = isDemo();
 
   return (
     <div className="screen">
@@ -33,13 +36,27 @@ export default function Home() {
           windows all work the way they do in space.
         </p>
         <div className="row" style={{ justifyContent: "center" }}>
-          <button className="btn btn--primary btn--big" onClick={() => go("choose")}>
-            Start a mission 🚀
-          </button>
+          {demo ? (
+            <button className="btn btn--primary btn--big" onClick={startDemo}>
+              Start the demo mission (Mars) 🚀
+            </button>
+          ) : (
+            <button className="btn btn--primary btn--big" onClick={() => go("choose")}>
+              Start a mission 🚀
+            </button>
+          )}
           <button className="btn btn--big" onClick={() => chooseScenario("moon")}>
             Try the tutorial (Moon)
           </button>
         </div>
+
+        {demo && (
+          <p className="tiny" style={{ marginTop: 10 }}>
+            Demo mode. That button picks Mars, loads a tested design and launches, so you are
+            watching a flying mission straight away. Four challenges arrive in the first minute,
+            including a green opportunity and the follow-up it causes later.
+          </p>
+        )}
       </div>
 
       <div className="steps">
