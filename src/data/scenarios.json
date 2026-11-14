@@ -5,7 +5,11 @@
     "name": "Moon Orbiter",
     "level": "Easy (tutorial)",
     "difficulty": "Easy",
-    "goal": "Map the Moon from orbit",
+    "goals": [
+      { "id": "map", "icon": "🗺️", "label": "Map the Moon from orbit", "instrumentId": "camera" },
+      { "id": "ice", "icon": "🧊", "label": "Hunt for water ice", "instrumentId": "radar" },
+      { "id": "magnetism", "icon": "🧲", "label": "Study the Moon's magnetism", "instrumentId": "magnetometer" }
+    ],
     "description": "Learn the basics. The Moon is close, sunlight is strong and you can launch any month.",
     "budget": 250,
     "deltaV": 4.0,
@@ -46,7 +50,11 @@
     "name": "Mars on a Budget",
     "level": "Medium",
     "difficulty": "Medium",
-    "goal": "Reach Mars orbit and send back photos",
+    "goals": [
+      { "id": "photos", "icon": "📷", "label": "Send back photos of Mars", "instrumentId": "camera" },
+      { "id": "dust", "icon": "🌪️", "label": "Watch the dust storms", "instrumentId": "weather" },
+      { "id": "water", "icon": "💧", "label": "Look for buried water", "instrumentId": "spectrometer" }
+    ],
     "description": "A very small budget, like ISRO's Mangalyaan. Mars is only reachable once every 26 months.",
     "budget": 150,
     "deltaV": 5.7,
@@ -87,7 +95,10 @@
     "name": "Jupiter Explorer",
     "level": "Hard",
     "difficulty": "Hard",
-    "goal": "Study Jupiter's clouds and magnetic field",
+    "goals": [
+      { "id": "clouds", "icon": "🌀", "label": "Study the clouds and magnetism", "instrumentId": "magnetometer" },
+      { "id": "moons", "icon": "🌙", "label": "Explore the icy moons", "instrumentId": "camera" }
+    ],
     "description": "Sunlight at Jupiter is only 3.7% of Earth's. The trip takes about 5 years.",
     "budget": 900,
     "deltaV": 7.0,

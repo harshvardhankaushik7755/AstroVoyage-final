@@ -11,7 +11,7 @@
  * Everything here is pure arithmetic over the data files, so a screen only has
  * to render the answer.
  */
-import type { Design, Route, Scenario } from "../data/game";
+import type { Design, MissionGoal, Route, Scenario } from "../data/game";
 import {
   findAntenna,
   findBody,
@@ -27,7 +27,7 @@ import { designScienceShare } from "./comms";
 import { powerAtTarget, powerNeeded } from "./power";
 import { requiredDeltaV } from "./windows";
 
-export type CheckId = "budget" | "mass" | "power" | "fuel" | "comms";
+export type CheckId = "goal" | "budget" | "mass" | "power" | "fuel" | "comms";
 
 export interface Check {
   id: CheckId;
@@ -50,12 +50,14 @@ export interface Check {
 }
 
 export interface CheckResult {
+  /** Only when a goal has been picked: is the instrument it needs on board? */
+  goal?: Check;
   budget: Check;
   mass: Check;
   power: Check;
   fuel: Check;
   comms: Check;
-  /** All five, in the order the Design Lab shows them. */
+  /** Every check that applies, in the order the Design Lab shows them. */
   checks: Check[];
   allOk: boolean;
   /** Science points the instruments can collect. */
@@ -107,8 +109,17 @@ export function spacecraftDeltaVNeeded(design: Design, scenario: Scenario, route
   return Math.max(0, requiredDeltaV(scenario, route) - fromRocket);
 }
 
-/** Run all five checks. */
-export function runChecks(design: Design, scenario: Scenario, route: Route): CheckResult {
+/**
+ * Run every check. `goal` is optional: pass it and the design is also asked
+ * whether it can actually do the job, which is the first thing a real mission
+ * is asked. Leave it out and only the five resource checks run.
+ */
+export function runChecks(
+  design: Design,
+  scenario: Scenario,
+  route: Route,
+  goal?: MissionGoal,
+): CheckResult {
   const rocket = findRocket(design.rocketId);
   const body = findBody(design.bodyId);
 
@@ -199,11 +210,31 @@ export function runChecks(design: Design, scenario: Scenario, route: Route): Che
     short: `${Math.round(share * 100)}% gets home`,
   };
 
-  const checks = [budget, mass, power, fuel, comms];
+  /* ---- can it do the job it was sent to do? */
+  const instrument = goal ? findInstruments([goal.instrumentId])[0] : undefined;
+  const carrying = goal ? design.instrumentIds.includes(goal.instrumentId) : false;
+  const goalCheck: Check | undefined =
+    goal && instrument
+      ? {
+          id: "goal",
+          label: "The job",
+          ok: carrying,
+          value: carrying ? 1 : 0,
+          limit: 1,
+          unit: "",
+          message: carrying
+            ? `You are carrying the ${instrument.name.toLowerCase()} this goal needs.`
+            : `To ${goal.label[0].toLowerCase()}${goal.label.slice(1)} you need a ${instrument.name.toLowerCase()}. Add one under Instruments.`,
+          short: `${instrument.name} on board`,
+        }
+      : undefined;
+
+  const checks = [...(goalCheck ? [goalCheck] : []), budget, mass, power, fuel, comms];
   const hasEverything =
     body !== undefined && rocket !== undefined && design.instrumentIds.length > 0;
 
   return {
+    goal: goalCheck,
     budget,
     mass,
     power,

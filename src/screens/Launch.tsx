@@ -6,7 +6,7 @@
  * more Δv, and Δv costs fuel, and fuel costs money.
  */
 import type { Route } from "../data/game";
-import { settings } from "../data/game";
+import { missionGoal, settings } from "../data/game";
 import { runChecks } from "../physics/checks";
 import {
   CALENDAR_MONTHS,
@@ -34,10 +34,12 @@ export default function Launch() {
   const setRoute = useGame((state) => state.setRoute);
   const launch = useGame((state) => state.launch);
   const go = useGame((state) => state.go);
+  const goalId = useGame((state) => state.goalId);
 
   if (!scenario) return null;
 
-  const check = runChecks(design, scenario, route);
+  const goal = missionGoal(scenario, goalId);
+  const check = runChecks(design, scenario, route, goal);
   const windowOpen = isWindowOpen(scenario, launchMonth);
   const canLaunch = check.allOk && windowOpen;
   // The route only moves the fuel check; the other four were settled in the lab.
@@ -52,7 +54,7 @@ export default function Launch() {
         <div>
           <h2>Launch</h2>
           <p className="lead" style={{ margin: 0 }}>
-            Pick a month, then choose the route. {scenario.name} — {scenario.goal}.
+            Pick a month, then choose the route. {scenario.name} — {goal.icon} {goal.label}.
           </p>
         </div>
         <button className="btn btn--ghost btn--small" onClick={() => go("design")}>

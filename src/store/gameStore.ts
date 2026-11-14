@@ -8,7 +8,8 @@
  */
 import { create } from "zustand";
 import type { Design, PartGroup, Route, Scenario } from "../data/game";
-import { findBody, findScenario, parts, presetDesign } from "../data/game";
+import { findBody, findScenario, missionGoal, parts, presetDesign } from "../data/game";
+import { withGoalInstrument } from "../physics/goals";
 import { designFlags } from "../physics/checks";
 import type { SimState } from "../sim/simulation";
 import { createSimulation, resolveEvent, resolveInsertion, step } from "../sim/simulation";
@@ -32,6 +33,8 @@ function startingDesign(): Design {
 export interface GameState {
   screen: Screen;
   scenarioId: string | null;
+  /** Which of the mission's goals the player chose. Null before they choose. */
+  goalId: string | null;
   design: Design;
   launchMonth: number;
   route: Route;
@@ -46,6 +49,7 @@ export interface GameState {
   /* ---- moving around */
   go: (screen: Screen) => void;
   chooseScenario: (id: string) => void;
+  chooseGoal: (id: string) => void;
   startOver: () => void;
 
   /* ---- designing */
@@ -78,6 +82,7 @@ export interface GameState {
 export const useGame = create<GameState>((set, get) => ({
   screen: "home",
   scenarioId: null,
+  goalId: null,
   design: startingDesign(),
   launchMonth: 0,
   route: "slow",
@@ -93,6 +98,7 @@ export const useGame = create<GameState>((set, get) => ({
     // A fresh design each time, so switching mission never leaves old parts behind.
     set({
       scenarioId: id,
+      goalId: scenario.goals[0].id,
       design: startingDesign(),
       launchMonth: scenario.preset.launchMonth,
       route: "slow",
@@ -101,10 +107,13 @@ export const useGame = create<GameState>((set, get) => ({
     });
   },
 
+  chooseGoal: (id) => set({ goalId: id }),
+
   startOver: () =>
     set({
       screen: "home",
       scenarioId: null,
+      goalId: null,
       design: startingDesign(),
       launchMonth: 0,
       route: "slow",
@@ -157,10 +166,14 @@ export const useGame = create<GameState>((set, get) => ({
     })),
 
   loadPreset: () => {
-    const scenario = currentScenario(get());
+    const state = get();
+    const scenario = currentScenario(state);
     if (!scenario) return;
+    // The preset is tuned for the mission's first goal. If the player picked a
+    // different one, the instrument it needs goes in too, or the button would
+    // hand back a design that fails the very first check.
     set({
-      design: presetDesign(scenario),
+      design: withGoalInstrument(presetDesign(scenario), missionGoal(scenario, state.goalId)),
       launchMonth: scenario.preset.launchMonth,
       route: scenario.preset.route,
     });
@@ -202,6 +215,7 @@ export const useGame = create<GameState>((set, get) => ({
     );
     set({
       scenarioId: scenario.id,
+      goalId: scenario.goals[0].id,
       design,
       launchMonth: scenario.preset.launchMonth,
       route: scenario.preset.route,

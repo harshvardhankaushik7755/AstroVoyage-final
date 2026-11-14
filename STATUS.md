@@ -79,3 +79,42 @@ project page, deployed link).
 
 **For Kunal.** The repo still has no git remote — creating it and pushing is the one thing I
 cannot do. After that, the deployed link.
+
+## 2026-11-14 — Stage 14: Choose a mission, rebuilt — and the goal became a real choice
+
+**Built.** The Choose screen now matches the reference: a quiet difficulty pill, the mission name,
+goal pills, the description, a Budget · Trip line, the three physics chips, and a full-width
+"Design this mission" button. Equal-height cards, and the home page's starfield behind it so the
+two screens read as one game.
+
+The goals are not decoration. Each mission has two or three, and each names an instrument the
+design cannot do the job without. It is a sixth launch check — **The job** — and it comes first,
+because "can this spacecraft do what we sent it for" is the first question a real mission is asked.
+
+Files: `src/physics/goals.ts` (new), `src/physics/goals.test.ts` (new, 25 tests),
+`src/screens/ChooseMission.tsx` (rewritten), `src/physics/checks.ts` (optional 6th check),
+`src/physics/missionFacts.ts` (+`tripLength`), `src/store/gameStore.ts` (+`goalId`, `chooseGoal`),
+`src/data/scenarios.json` (`goal` → `goals[]`), `src/data/game.ts`, DesignLab/Launch/Result,
+`src/styles.css`, `scripts/measure.mjs`.
+
+**Decisions I made on my own.**
+- *The goal check blocks the launch* rather than warning. It is the point of the challenge.
+- *So `loadPreset` now adds the goal's instrument*, or "Load a design that works" could hand back a
+  design failing the very first check. A test flies every mission × every goal from the preset to
+  prove there is no dead end.
+- *Mars's "look for buried water" uses the spectrometer, not a radar.* The radar's $35M and 60 kg
+  does not fit beside Mangalyaan's $150M — and Mars Odyssey found the buried ice with a
+  spectrometer in 2002, so the cheaper part is also the historically right one. The test caught
+  this, not me.
+- *The goal pick is local to the Choose screen until "Design this mission"*, so lighting up a goal
+  on one card cannot throw away a design started on another.
+- *Trip length says "about 5 years", not "about 62 months".* Same number, words a 12-year-old owns.
+
+**Numbers.** 258 unit tests in 12 files, all passing. `npm run build` passes. `npm run measure`
+passes clean at 1366×650 and 390×844. The sixth check cost 28px on the Design Lab, paid for by
+tightening the check rows.
+
+**Still not done.** Sound; lit spheres with real phases; the submission pack (30-second video,
+project page, deployed link).
+
+**For Kunal.** Still no git remote. That and the deployed link are the two things only you can do.

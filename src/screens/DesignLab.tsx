@@ -8,7 +8,7 @@
  */
 import { useRef, useState } from "react";
 import type { PartGroup } from "../data/game";
-import { findBody, parts, settings } from "../data/game";
+import { findBody, missionGoal, parts, settings } from "../data/game";
 import { runChecks } from "../physics/checks";
 import { maxFuelKg, partEffect, recommendedFuelKg } from "../physics/partEffects";
 import { Checks, ResourceBars } from "../components/ResourceBars";
@@ -42,6 +42,7 @@ export default function DesignLab() {
   const setFuel = useGame((state) => state.setFuel);
   const loadPreset = useGame((state) => state.loadPreset);
   const go = useGame((state) => state.go);
+  const goalId = useGame((state) => state.goalId);
 
   /** Which group is open. Fuel is the seventh, so only one thing is ever open. */
   const [open, setOpen] = useState<PartGroup | "fuel" | null>("body");
@@ -49,7 +50,8 @@ export default function DesignLab() {
 
   if (!scenario) return null;
 
-  const check = runChecks(design, scenario, route);
+  const goal = missionGoal(scenario, goalId);
+  const check = runChecks(design, scenario, route, goal);
   const slots = findBody(design.bodyId)?.slots ?? 0;
   const fuelMax = maxFuelKg(design);
 
@@ -117,7 +119,7 @@ export default function DesignLab() {
         <div>
           <h2>Design Lab</h2>
           <p className="lead" style={{ margin: 0 }}>
-            {scenario.name} — {scenario.goal}. You have <strong>${scenario.budget}M</strong>.
+            {scenario.name} — {goal.icon} {goal.label}. You have <strong>${scenario.budget}M</strong>.
           </p>
         </div>
         <div className="row row--tight">

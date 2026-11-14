@@ -6,7 +6,7 @@
  * in for $118M is standing next to Mangalyaan, and that is a true thing to
  * have noticed.
  */
-import { findRealMission, settings } from "../data/game";
+import { findRealMission, missionGoal, settings } from "../data/game";
 import { runChecks } from "../physics/checks";
 import { explainMission } from "../ai/flightDirector";
 import { scoreHeadline, scoreMission } from "../sim/score";
@@ -22,10 +22,12 @@ export default function Result() {
   const route = useGame((state) => state.route);
   const go = useGame((state) => state.go);
   const startOver = useGame((state) => state.startOver);
+  const goalId = useGame((state) => state.goalId);
 
   if (!scenario) return null;
 
-  const check = runChecks(design, scenario, route);
+  const goal = missionGoal(scenario, goalId);
+  const check = runChecks(design, scenario, route, goal);
   const score = scoreMission(sim, check);
   const director = explainMission(sim, check, score, scenario);
 
@@ -39,7 +41,7 @@ export default function Result() {
         <div>
           <h1>{scoreHeadline(score, sim)}</h1>
           <p className="lead">
-            {scenario.name} — {scenario.goal}
+            {scenario.name} — {goal.icon} {goal.label}
           </p>
         </div>
         <div className="row row--tight">

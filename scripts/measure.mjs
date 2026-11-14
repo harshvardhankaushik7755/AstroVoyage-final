@@ -146,10 +146,26 @@ const run = async () => {
   const missions = await page.locator(".mission").count();
   if (missions !== 3) problem(`choose mission: ${missions} missions shown, expected 3`);
   else note("choose mission: all three missions shown");
+
+  /* Every card offers real goals, and starts with one of them chosen. A goal
+     names an instrument the launch checks look for, so an unlit card would
+     send the player into the Design Lab with nothing to aim at. */
+  const goals = await page.locator(".mission .goal-pill").count();
+  if (goals < 8) problem(`choose mission: ${goals} goals across the cards, expected 8`);
+  else note(`choose mission: ${goals} goals to pick from`);
+
+  const lit = await page.locator('.mission .goal-pill[aria-pressed="true"]').count();
+  if (lit !== 3) problem(`choose mission: ${lit} cards have a goal lit, expected 3`);
+  else note("choose mission: every card starts with a goal chosen");
+
   await checkScreen(page, "02-choose");
 
   /* ---- Design Lab: load the tested design so the checks pass */
-  await page.locator(".mission").nth(1).click(); // Mars
+  await page
+    .locator(".mission")
+    .nth(1)
+    .getByRole("button", { name: /Design this mission/ })
+    .click(); // Mars
   await page.waitForTimeout(150);
   // The opening design fails every check, and five failing checks each need a
   // full sentence the player has to read. That one state is allowed to scroll;

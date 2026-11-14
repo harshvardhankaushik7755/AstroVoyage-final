@@ -81,3 +81,19 @@ export function windowFact(scenario: Scenario): MissionFact {
 export function missionFacts(scenario: Scenario): MissionFact[] {
   return [sunlightFact(scenario), delayFact(scenario), windowFact(scenario)];
 }
+
+/**
+ * How long the trip out takes, in the biggest unit that still reads plainly.
+ * "about 62 months" is a true answer that nobody can picture; "about 5 years"
+ * is the same number in words a 12-year-old already owns.
+ */
+export function tripLength(scenario: Scenario): string {
+  const days = scenario.tripDays;
+  const say = (count: number, unit: string) =>
+    `about ${count} ${unit}${count === 1 ? "" : "s"}`;
+
+  if (days < 60) return say(Math.round(days), "day");
+  const months = Math.round(days / 30.44);
+  if (months < 36) return say(months, "month");
+  return say(Math.round(days / 365.25), "year");
+}

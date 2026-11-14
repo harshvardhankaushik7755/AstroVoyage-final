@@ -27,7 +27,7 @@ including a green *opportunity* and the follow-up that choosing it causes later.
 
 | | |
 |---|---|
-| ![Home](docs/screenshots/01-home.png)<br>**Home** — and the solar system really is turning | ![Choose a mission](docs/screenshots/02-choose.png)<br>**Choose** — each card says how hard it is, and why |
+| ![Home](docs/screenshots/01-home.png)<br>**Home** — and the solar system really is turning | ![Choose a mission](docs/screenshots/02-choose.png)<br>**Choose** — and pick what you are going there to do |
 | ![Design Lab](docs/screenshots/03b-design-lab-ready.png)<br>**Design Lab** — six part groups, four live bars | ![Launch calendar](docs/screenshots/04-launch.png)<br>**Launch** — the green months are real launch windows |
 | ![A challenge](docs/screenshots/06-challenge.png)<br>**A challenge** — it happens to the spacecraft *you* built | ![Arrival](docs/screenshots/07-arrival.png)<br>**Arrival** — and the planets keep moving |
 | ![Results](docs/screenshots/08-results.png)<br>**Results** — score, stars and the Flight Director | ![Where the numbers come from](docs/screenshots/09-nasa-sources.png)<br>**Every number, sourced** — to NASA, or marked as ours |
@@ -75,7 +75,13 @@ See [NASA_RESOURCES.md](NASA_RESOURCES.md) for every NASA resource used and what
 - **Part cards that know the mission.** Each one says what choosing it would do *here*, worked out
   live from the physics — the small antenna gets 100% of your science home from the Moon and 10%
   from Mars.
-- **Five launch checks** in plain English, each with a sentence saying exactly what is wrong.
+- **Pick a goal, and it changes the spacecraft.** Each mission offers two or three real goals —
+  map the Moon, hunt for water ice, watch the dust storms, explore the icy moons — and every goal
+  names one instrument it cannot be done without. Choose "look for buried water" and the Design Lab
+  will not let you launch without a spectrometer, which is the instrument Mars Odyssey actually
+  found buried ice with in 2002.
+- **Six launch checks** in plain English, each with a sentence saying exactly what is wrong. The
+  first one asks whether the spacecraft can do the job at all.
 - **A real launch calendar** with the window band, and a fast/slow route trade.
 - **A live flight map** — seeded starfield with a Milky Way band, the orbits, the transfer, and a
   trail behind the spacecraft. A scale bar measured from the map's own AU-to-pixel factor.
@@ -107,7 +113,7 @@ See [NASA_RESOURCES.md](NASA_RESOURCES.md) for every NASA resource used and what
 
 ```bash
 npm run dev       # dev server
-npm test          # 233 tests
+npm test          # 258 tests
 npm run build     # type-check + production build
 npm run measure   # plays the whole game in a headless browser and checks it
 ```
@@ -123,7 +129,7 @@ another size with `npm run measure -- 390 844`. First run needs the browser: `np
 src/data/       parts, scenarios, events, settings, realMissions, glossary, nasaSources, sky,
                 homeSystem
                 game.ts — the one place the JSON is read and typed
-src/physics/    rocketEquation, power, comms, windows, checks, partEffects, missionFacts
+src/physics/    rocketEquation, power, comms, windows, checks, goals, partEffects, missionFacts
 src/sim/        simulation — the cruise engine; score; shipLayout; mapScale; sky; homeSystem;
                 context; demo
 src/store/      gameStore.ts — the only place game state lives

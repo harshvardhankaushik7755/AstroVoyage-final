@@ -116,13 +116,24 @@ export interface Preset {
   route: Route;
 }
 
+/** One thing a mission could be sent to do, and the instrument it takes. */
+export interface MissionGoal {
+  id: string;
+  /** A single emoji, so the goal is recognisable before it is read. */
+  icon: string;
+  label: string;
+  /** The instrument this goal cannot be done without. */
+  instrumentId: string;
+}
+
 export interface Scenario {
   id: string;
   name: string;
   level: string;
   /** One word for a pill: Easy, Medium, Hard. `level` is the long version. */
   difficulty: string;
-  goal: string;
+  /** What you could go there to do. The player picks one before designing. */
+  goals: MissionGoal[];
   description: string;
   /** $M available to spend. */
   budget: number;
@@ -403,6 +414,14 @@ export const findAntenna = (id: string) => byId(parts.antennas, id);
 export const findEngine = (id: string) => byId(parts.engines, id);
 export const findRocket = (id: string) => byId(parts.rockets, id);
 export const findScenario = (id: string) => byId(scenarios, id);
+
+/**
+ * The goal the player picked, or the mission's first one when they have not
+ * picked yet. Never returns undefined: every mission has at least one goal.
+ */
+export function missionGoal(scenario: Scenario, goalId?: string | null): MissionGoal {
+  return scenario.goals.find((goal) => goal.id === goalId) ?? scenario.goals[0];
+}
 export const findRealMission = (id: string) => byId(realMissions, id);
 export const findEventDef = (id: string) => byId(eventDefs, id);
 
