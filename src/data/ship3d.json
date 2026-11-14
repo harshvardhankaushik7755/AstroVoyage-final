@@ -1,0 +1,64 @@
+{
+  "_note": "The 3D view of the spacecraft you built. Sizes are not here: those come from shipLayout, which works them out from the real design, so the 3D model and the 2D sprite are always the same machine. What is here is how it is lit, framed and coloured.",
+
+  "camera": {
+    "_note": "distanceFactor is multiplied by how big the model actually is, so a tiny Moon orbiter and a big Jupiter probe both fill the frame. A larger fov is a longer lens: less perspective, more of a technical elevation.",
+    "distanceFactor": 2.45,
+    "fov": 300,
+    "near": 1
+  },
+
+  "light": {
+    "_note": "Where the Sun is, in the model's own frame. Over the viewer's left shoulder and a little above, which is where a reader expects light to come from.",
+    "x": -0.45,
+    "y": 0.72,
+    "z": 0.55
+  },
+
+  "shading": {
+    "_note": "ambient is how lit the darkest face still is; ambient + range = 1, so a face square to the Sun is full strength.",
+    "ambient": 0.32,
+    "range": 0.68
+  },
+
+  "view": {
+    "secondsPerTurn": 24,
+    "startYaw": 0.7,
+    "startPitch": -0.38,
+    "minPitch": -1.2,
+    "maxPitch": 1.2,
+    "dragSensitivity": 0.009
+  },
+
+  "shape": {
+    "_note": "Proportions of the parts, as shares of the sizes shipLayout already worked out. panelChordShare widens the wings for the 3D view only: the flat sprite is seen face-on so a narrow chord reads fine there, but in 3D a narrow wing turns into a stick.",
+    "busDepthShare": 0.92,
+    "panelThickness": 0.45,
+    "panelChordShare": 1.9,
+    "panelCells": 3,
+    "dishDepthShare": 0.55,
+    "dishSides": 14,
+    "dishTipShare": 0.2,
+    "nozzleSides": 12,
+    "nozzleFlare": 1.45,
+    "sensorGap": 0.18,
+    "rtgLength": 4.2,
+    "rtgRadius": 1.1,
+    "rtgSides": 8,
+    "rtgFins": 4
+  },
+
+  "colors": {
+    "bus": "#c3cde4",
+    "busGold": "#d8b269",
+    "panel": "#2b4a94",
+    "panelCell": "#4a6fc4",
+    "panelBack": "#8d99b6",
+    "dish": "#eef2fb",
+    "boom": "#9aa6c0",
+    "sensor": "#7ee8c8",
+    "nozzle": "#8d8073",
+    "rtg": "#c98a4b",
+    "fin": "#9aa6c0"
+  }
+}

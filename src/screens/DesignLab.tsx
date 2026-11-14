@@ -13,6 +13,7 @@ import { runChecks } from "../physics/checks";
 import { maxFuelKg, partEffect, recommendedFuelKg } from "../physics/partEffects";
 import { Checks, ResourceBars } from "../components/ResourceBars";
 import Glossary from "../components/Glossary";
+import Ship3DView from "../components/Ship3DView";
 import Provenance from "../components/Provenance";
 import { useGame, useScenario } from "../store/gameStore";
 
@@ -123,6 +124,7 @@ export default function DesignLab() {
           </p>
         </div>
         <div className="row row--tight">
+          <Ship3DView design={design} small />
           <Glossary />
           <button className="btn btn--ghost btn--small" onClick={() => go("choose")}>
             ← Change mission

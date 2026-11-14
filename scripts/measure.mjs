@@ -182,6 +182,25 @@ const run = async () => {
   } else {
     note("design lab: the tested design passes all five checks");
     await checkScreen(page, "03b-design-lab-ready");
+
+    /* ---- the 3D view. It has no library behind it, so if the maths ever goes
+       wrong it fails silently as an empty box rather than an error. */
+    await page.getByRole("button", { name: /See it in 3D/ }).first().click();
+    await page.waitForTimeout(500);
+    const polygons = await page.locator(".ship3d-stage polygon").count();
+    if (polygons < 20) problem(`3D view: only ${polygons} faces drawn, expected a spacecraft`);
+    else note(`3D view: ${polygons} faces drawn`);
+
+    const before = await page.locator(".ship3d-stage polygon").first().getAttribute("points");
+    await page.waitForTimeout(700);
+    const after = await page.locator(".ship3d-stage polygon").first().getAttribute("points");
+    if (before === after) problem("3D view: it is not turning");
+    else note("3D view: it turns");
+
+    await shoot(page, "03c-ship-3d");
+    await page.getByRole("button", { name: "Close" }).first().click();
+    await page.waitForTimeout(200);
+
     await goToLaunch.click();
   }
 

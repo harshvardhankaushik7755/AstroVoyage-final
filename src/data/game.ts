@@ -16,6 +16,7 @@ import nasaSourcesJson from "./nasaSources.json";
 import skyJson from "./sky.json";
 import homeSystemJson from "./homeSystem.json";
 import planetsJson from "./planets.json";
+import ship3dJson from "./ship3d.json";
 
 /* ------------------------------------------------------------------ parts */
 
@@ -424,6 +425,41 @@ export const planets = planetsJson as unknown as PlanetsConfig;
 
 /** How this mission's target is drawn. An unknown world is simply plain. */
 export const worldLook = (scenarioId: string): WorldLook => planets.worlds[scenarioId] ?? {};
+
+/* ------------------------------------------- the 3D view of the spacecraft */
+
+export interface Ship3DConfig {
+  camera: { distanceFactor: number; fov: number; near: number };
+  light: { x: number; y: number; z: number };
+  shading: { ambient: number; range: number };
+  view: {
+    secondsPerTurn: number;
+    startYaw: number;
+    startPitch: number;
+    minPitch: number;
+    maxPitch: number;
+    dragSensitivity: number;
+  };
+  shape: {
+    busDepthShare: number;
+    panelThickness: number;
+    panelChordShare: number;
+    panelCells: number;
+    dishDepthShare: number;
+    dishSides: number;
+    dishTipShare: number;
+    nozzleSides: number;
+    nozzleFlare: number;
+    sensorGap: number;
+    rtgLength: number;
+    rtgRadius: number;
+    rtgSides: number;
+    rtgFins: number;
+  };
+  colors: Record<string, string>;
+}
+
+export const ship3d = ship3dJson as unknown as Ship3DConfig;
 
 /* ---------------------------------------------------------------- lookups */
 

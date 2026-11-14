@@ -701,6 +701,73 @@ a {
 }
 
 /* =========================================================================
+   The 3D view of the spacecraft
+   ========================================================================= */
+
+.ship3d {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ship3d-stage {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+  background:
+    radial-gradient(120% 90% at 50% 10%, #16203a 0%, #080d1b 70%);
+  border: 1px solid var(--line);
+  cursor: grab;
+  touch-action: none;
+}
+
+.ship3d-stage--held {
+  cursor: grabbing;
+}
+
+.ship3d-stage polygon {
+  /* The faces are the model, not buttons; the pointer is for turning it. */
+  shape-rendering: geometricPrecision;
+}
+
+.ship3d-caption {
+  margin: 0;
+  min-height: 19px;
+  font-size: 13px;
+  color: var(--dim);
+  text-align: center;
+}
+
+.ship3d-parts {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 6px 14px;
+  margin-top: 12px;
+}
+
+.ship3d-part {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  font-size: 13px;
+  padding: 4px 9px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+}
+
+.ship3d-part-label {
+  color: var(--faint);
+  font-weight: 600;
+}
+
+.ship3d-part-value {
+  color: var(--text);
+  text-align: right;
+}
+
+/* =========================================================================
    Resource bars
    ========================================================================= */
 

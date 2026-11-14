@@ -21,6 +21,7 @@ import {
 import { Checks } from "../components/ResourceBars";
 import MissionSummary from "../components/MissionSummary";
 import Provenance from "../components/Provenance";
+import Ship3DView from "../components/Ship3DView";
 import { useGame, useScenario } from "../store/gameStore";
 
 const ROUTES: Route[] = ["slow", "fast"];
@@ -57,9 +58,12 @@ export default function Launch() {
             Pick a month, then choose the route. {scenario.name} — {goal.icon} {goal.label}.
           </p>
         </div>
+        <div className="row row--tight">
+        <Ship3DView design={design} small />
         <button className="btn btn--ghost btn--small" onClick={() => go("design")}>
           ← Back to the Design Lab
         </button>
+        </div>
       </div>
 
       <div style={{ margin: "8px 0" }}>
