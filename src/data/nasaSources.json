@@ -1,0 +1,146 @@
+[
+  {
+    "id": "rocketEquation",
+    "kind": "formula",
+    "what": "Fuel and speed (Δv)",
+    "detail": "Tsiolkovsky rocket equation: Δv = Isp × g₀ × ln(m₀ / mf), with g₀ = 9.80665 m/s². It is the same equation every real rocket is designed with.",
+    "source": "NASA Glenn, Beginner's Guide to Rockets",
+    "url": "https://www.grc.nasa.gov/WWW/K-12/rocket/"
+  },
+  {
+    "id": "sunlight",
+    "kind": "formula",
+    "what": "Sunlight on the panels",
+    "detail": "Inverse-square law: power ÷ distance². Mars gets about 43% of Earth's sunlight, Jupiter about 3.7%.",
+    "source": "NASA NSSDCA Planetary Fact Sheets",
+    "url": "https://nssdc.gsfc.nasa.gov/planetary/planetfact.html"
+  },
+  {
+    "id": "signalDelay",
+    "kind": "formula",
+    "what": "Signal delay",
+    "detail": "Light takes 8.317 minutes to cross one AU, so the delay is the distance in AU × 8.317 minutes each way.",
+    "source": "NASA Deep Space Network Now",
+    "url": "https://eyes.nasa.gov/apps/dsn-now/"
+  },
+  {
+    "id": "transfer",
+    "kind": "formula",
+    "what": "Where the spacecraft is on the map",
+    "detail": "A Hohmann transfer half-ellipse, timed with Kepler's equation, so the spacecraft really does move fast near the Sun and slowly far away.",
+    "source": "NASA JPL Horizons, Solar System Dynamics",
+    "url": "https://ssd.jpl.nasa.gov/horizons/"
+  },
+  {
+    "id": "planetData",
+    "kind": "real",
+    "what": "Planet distances and orbit times",
+    "detail": "Mars orbits the Sun at 1.52 AU in 687 days, Jupiter at 5.2 AU in 4,333 days, the Moon orbits Earth in 27.3 days.",
+    "source": "NASA NSSDCA Planetary Fact Sheets",
+    "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html"
+  },
+  {
+    "id": "windows",
+    "kind": "real",
+    "what": "Launch windows",
+    "detail": "Mars lines up with Earth about every 26 months, Jupiter about every 13. The Moon needs no window at all.",
+    "source": "NASA JPL Horizons, Solar System Dynamics",
+    "url": "https://ssd.jpl.nasa.gov/horizons/"
+  },
+  {
+    "id": "tripTimes",
+    "kind": "real",
+    "what": "Trip times",
+    "detail": "Rounded from real mission durations: about 3 days to the Moon, 8 months to Mars, 5 years to Jupiter.",
+    "source": "NASA NSSDCA Master Catalog",
+    "url": "https://nssdc.gsfc.nasa.gov/nmc/"
+  },
+  {
+    "id": "spacecraftParts",
+    "kind": "real",
+    "what": "Part masses, power and data rates",
+    "detail": "Bus masses, power budgets, propulsion and communications figures are in the range NASA reports for real small spacecraft.",
+    "source": "NASA State-of-the-Art of Small Spacecraft Technology (2026)",
+    "url": "https://www.nasa.gov/smallsat-institute/sst-soa"
+  },
+  {
+    "id": "engines",
+    "kind": "real",
+    "what": "Engine performance (Isp)",
+    "detail": "Chemical engines really do reach about 320 seconds and ion engines about 3,000, which is why an ion engine needs so little fuel.",
+    "source": "NASA State-of-the-Art of Small Spacecraft Technology (2026)",
+    "url": "https://www.nasa.gov/smallsat-institute/sst-soa"
+  },
+  {
+    "id": "rtg",
+    "kind": "real",
+    "what": "The nuclear battery (RTG)",
+    "detail": "An RTG makes electricity from heat, so it gives the same power anywhere - which is why it is the only sensible choice far from the Sun.",
+    "source": "NASA Radioisotope Power Systems",
+    "url": "https://rps.nasa.gov/"
+  },
+  {
+    "id": "dsn",
+    "kind": "real",
+    "what": "Sharing the dishes on Earth",
+    "detail": "Only three NASA sites can hear deep-space missions - Goldstone, Madrid and Canberra - and every mission books time on them.",
+    "source": "NASA Deep Space Network Now",
+    "url": "https://eyes.nasa.gov/apps/dsn-now/"
+  },
+  {
+    "id": "realMissions",
+    "kind": "real",
+    "what": "The real missions we compare you with",
+    "detail": "Chandrayaan-2, Lunar Reconnaissance Orbiter, Mangalyaan, MAVEN and Juno, with their real agencies and launch years.",
+    "source": "NASA NSSDCA Master Catalog",
+    "url": "https://nssdc.gsfc.nasa.gov/nmc/"
+  },
+  {
+    "id": "stories",
+    "kind": "real",
+    "what": "The stories on the challenge cards",
+    "detail": "Every \"Real story\" line is something that happened to a real spacecraft, with the year it happened.",
+    "source": "NASA Science missions",
+    "url": "https://science.nasa.gov/"
+  },
+  {
+    "id": "partCosts",
+    "kind": "game",
+    "what": "Part costs",
+    "detail": "Chosen to make the choices interesting and the numbers easy to hold in your head. A real spacecraft part list is far longer.",
+    "source": "Game value",
+    "url": null
+  },
+  {
+    "id": "budgets",
+    "kind": "game",
+    "what": "Mission budgets",
+    "detail": "$250M, $150M and $900M. Real missions cost more, but the shape of the choice is the same: every kilogram costs money.",
+    "source": "Game value",
+    "url": null
+  },
+  {
+    "id": "sciencePoints",
+    "kind": "game",
+    "what": "Science points",
+    "detail": "A made-up score for what each instrument is worth, so missions can be compared. Real science is not a number.",
+    "source": "Game value",
+    "url": null
+  },
+  {
+    "id": "eventChances",
+    "kind": "game",
+    "what": "How likely each challenge is",
+    "detail": "Tuned so a careful design usually survives and a tight one sometimes does not. The events themselves are real kinds of trouble.",
+    "source": "Game value",
+    "url": null
+  },
+  {
+    "id": "eventCosts",
+    "kind": "game",
+    "what": "How much a challenge costs you",
+    "detail": "The fuel, science and power a choice costs are game values, picked so no single card can end a well-built mission on its own.",
+    "source": "Game value",
+    "url": null
+  }
+]

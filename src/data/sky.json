@@ -1,0 +1,34 @@
+{
+  "_note": "Every tunable number for the decorative sky. Change the seed for a different sky; it stays the same on every run.",
+  "seed": 20261114,
+  "starColor": "#eef2ff",
+
+  "stars": {
+    "count": 260,
+    "minSize": 0.4,
+    "maxSize": 1.6,
+    "minOpacity": 0.25,
+    "maxOpacity": 0.9,
+    "shareInBand": 0.45,
+    "tintChance": 0.12
+  },
+
+  "milkyWay": {
+    "angleDeg": -28,
+    "widthShare": 0.34,
+    "opacity": 0.2,
+    "color": "#9fb0e8",
+    "edgeColor": "#7e8fd0",
+    "peakAlpha": 0.55
+  },
+
+  "galaxies": { "count": 2, "minRadius": 4, "maxRadius": 8, "opacity": 0.22 },
+  "nebulae": { "count": 1, "minRadius": 26, "maxRadius": 42, "opacity": 0.14 },
+
+  "edge": {
+    "_note": "Keeps decoration away from the middle of the map, where the mission is drawn.",
+    "keepOutRadiusShare": 0.38,
+    "marginShare": 0.05,
+    "cornerShare": 0.16
+  }
+}

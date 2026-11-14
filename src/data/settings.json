@@ -1,0 +1,25 @@
+{
+  "_note": "Timing and pacing. cruiseSeconds is the real-time length of every cruise, whatever the distance - that is what sets each scenario's time scale.",
+
+  "cruiseSeconds": 75,
+  "fuelMargin": 1.15,
+
+  "decisionSeconds": 20,
+  "beatMs": 2000,
+  "effectMs": 2000,
+  "shakeMs": 300,
+  "clockJumpMs": 1500,
+  "burnHoldMs": 1200,
+  "insertionCountdownMs": 1500,
+
+  "eventsPerMission": { "min": 3, "max": 5 },
+  "eventWindow": { "from": 0.15, "to": 0.85 },
+
+  "_routesNote": "The fast route arrives sooner but needs more Δv, so it costs fuel and therefore money.",
+  "routes": {
+    "slow": { "label": "Slow and cheap", "deltaVFactor": 1.0, "tripFactor": 1.0, "note": "The cheapest path. Takes the full trip time." },
+    "fast": { "label": "Fast and thirsty", "deltaVFactor": 1.2, "tripFactor": 0.75, "note": "Arrives a quarter sooner, but needs 20% more Δv." }
+  },
+
+  "minScienceHome": 0.25
+}

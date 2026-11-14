@@ -1,0 +1,15 @@
+[
+  { "term": "Delta-v (Δv)", "meaning": "How much the spacecraft must change its speed to make a trip. More Δv means more fuel." },
+  { "term": "Isp", "meaning": "How efficient an engine is. A higher number means it needs less fuel for the same push." },
+  { "term": "Rocket equation", "meaning": "The formula that links fuel, mass and Δv. Every real rocket is designed with it." },
+  { "term": "Launch window", "meaning": "The short period when Earth and the target planet are in the right positions, so the spacecraft can get there with a normal amount of fuel." },
+  { "term": "Transfer orbit", "meaning": "The curved path around the Sun that a spacecraft follows from one planet to another." },
+  { "term": "Hohmann transfer", "meaning": "The cheapest transfer orbit between two circular orbits. It is half an ellipse." },
+  { "term": "AU", "meaning": "Astronomical Unit: the distance from Earth to the Sun, about 150 million km." },
+  { "term": "RTG (nuclear battery)", "meaning": "A power source that makes electricity from heat. It works just as well far from the Sun." },
+  { "term": "Orbit insertion", "meaning": "The braking burn that slows the spacecraft enough to be captured. Too little fuel and it flies straight past." },
+  { "term": "Safe mode", "meaning": "When a spacecraft notices something wrong it shuts almost everything down and waits for instructions." },
+  { "term": "Deep Space Network", "meaning": "NASA's giant radio dishes in California, Spain and Australia. Every deep-space mission shares them." },
+  { "term": "Science points", "meaning": "Our made-up score for what each instrument is worth, so missions can be compared. Real science is not a number." },
+  { "term": "Why the planets keep moving", "meaning": "After you arrive, the planets carry on round their orbits and your spacecraft rides round the one it reached. Nothing in space stops." }
+]
