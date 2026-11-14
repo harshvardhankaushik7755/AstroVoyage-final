@@ -143,6 +143,10 @@ export interface Scenario {
   color: string;
   /** What sits in the middle of the map. */
   centralBody: "sun" | "earth";
+  /** Where the transfer begins: Earth's orbit for a planet, a high Earth orbit for the Moon. */
+  startRadiusAU: number;
+  /** How long the departure point takes to go round once, days. */
+  startOrbitDays: number;
   targetOrbitRadiusAU: number;
   targetOrbitDays: number;
   /** Δv the braking burn at arrival needs, km/s. */
