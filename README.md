@@ -29,7 +29,7 @@ including a green *opportunity* and the follow-up that choosing it causes later.
 |---|---|
 | ![Home](docs/screenshots/01-home.png)<br>**Home** — and the solar system really is turning | ![Choose a mission](docs/screenshots/02-choose.png)<br>**Choose** — and pick what you are going there to do |
 | ![Design Lab](docs/screenshots/03b-design-lab-ready.png)<br>**Design Lab** — six part groups, four live bars | ![Launch calendar](docs/screenshots/04-launch.png)<br>**Launch** — the green months are real launch windows |
-| ![A challenge](docs/screenshots/06-challenge.png)<br>**A challenge** — it happens to the spacecraft *you* built | ![Arrival](docs/screenshots/07-arrival.png)<br>**Arrival** — and the planets keep moving |
+| ![The spacecraft in 3D](docs/screenshots/03c-ship-3d.png)<br>**In 3D** — and the renderer is ours | ![Arrival](docs/screenshots/07-arrival.png)<br>**Arrival** — and the planets keep moving |
 | ![Results](docs/screenshots/08-results.png)<br>**Results** — score, stars and the Flight Director | ![Where the numbers come from](docs/screenshots/09-nasa-sources.png)<br>**Every number, sourced** — to NASA, or marked as ours |
 
 It works on a phone, where every screen stacks into one column:
@@ -70,6 +70,16 @@ See [NASA_RESOURCES.md](NASA_RESOURCES.md) for every NASA resource used and what
   times, because at true scale Earth would sit inside the Sun and Jupiter would take eleven minutes
   to go round. One CSS keyframe per ring, so there is no animation loop, and
   `prefers-reduced-motion` stops it dead.
+- **A 3D view of the spacecraft you built**, with the renderer written here rather than imported.
+  Rotate the corners, cull the faces pointing away, divide by distance for perspective, sort
+  far-to-near and paint — the painter's algorithm, about two hundred lines, no 3D library. Every
+  size comes from the same `shipLayout` that draws the flat sprite, so it is never a different
+  machine from the one flying the mission. Drag to turn it; point at a part to name it.
+- **Play as a team, 2 to 4, on one laptop.** Each player owns part of the spacecraft — Flight
+  Director, Power Engineer, Comms Officer, Science Lead. When a solar storm hits the panels the
+  card says *"Priya, Power Engineer — this one is yours"*, and the Results screen counts how many
+  calls each of you took. Anything nobody owns falls to the Flight Director, so a team of two still
+  has an answer for every challenge.
 - **Three missions** — Moon (tutorial), Mars on a Budget (Mangalyaan-style, $150M), Jupiter Explorer.
 - **Six part groups** and a fuel slider, with four live bars: money, mass, power and fuel Δv.
 - **Part cards that know the mission.** Each one says what choosing it would do *here*, worked out
@@ -120,7 +130,7 @@ See [NASA_RESOURCES.md](NASA_RESOURCES.md) for every NASA resource used and what
 
 ```bash
 npm run dev       # dev server
-npm test          # 272 tests
+npm test          # 340 tests
 npm run build     # type-check + production build
 npm run measure   # plays the whole game in a headless browser and checks it
 ```
@@ -134,15 +144,15 @@ another size with `npm run measure -- 390 844`. First run needs the browser: `np
 
 ```
 src/data/       parts, scenarios, events, settings, realMissions, glossary, nasaSources, sky,
-                homeSystem, planets, sounds
+                homeSystem, planets, sounds, ship3d, roles
                 game.ts — the one place the JSON is read and typed
 src/physics/    rocketEquation, power, comms, windows, checks, goals, partEffects, missionFacts
 src/sim/        simulation — the cruise engine; score; shipLayout; mapScale; sky; homeSystem;
-                context; demo
+                render3d + shipModel3d — the 3D renderer; team; context; demo
 src/store/      gameStore.ts — the only place game state lives
-src/screens/    Home, ChooseMission, DesignLab, Launch, MissionControl, Result
-src/components/ ResourceBars, Gauge, Spacecraft, Planet, Starfield, SolarSystem, Beat,
-                Timeline, Glossary, Provenance
+src/screens/    Home, TeamSetup, ChooseMission, DesignLab, Launch, MissionControl, Result
+src/components/ ResourceBars, Gauge, Spacecraft, Ship3D, Planet, Starfield, SolarSystem,
+                Beat, Timeline, Glossary, Provenance
 src/audio.ts    every sound, built from notes by the browser's own oscillator
 src/styles.css  one stylesheet, plain CSS, all colour in variables on :root
 ```

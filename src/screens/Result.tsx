@@ -14,6 +14,7 @@ import { findEventDef } from "../data/game";
 import MissionSummary from "../components/MissionSummary";
 import Provenance from "../components/Provenance";
 import { useGame, useScenario } from "../store/gameStore";
+import { decisionsPerPlayer, isTeam, roleOf } from "../sim/team";
 
 export default function Result() {
   const scenario = useScenario();
@@ -23,6 +24,7 @@ export default function Result() {
   const go = useGame((state) => state.go);
   const startOver = useGame((state) => state.startOver);
   const goalId = useGame((state) => state.goalId);
+  const players = useGame((state) => state.players);
 
   if (!scenario) return null;
 
@@ -72,6 +74,36 @@ export default function Result() {
               </div>
             </div>
           </div>
+
+          {/* ------------------------------------------------ the team */}
+          {isTeam(players) && sim && (
+            <div className="panel">
+              <div className="panel-title">
+                The crew
+                <span className="chip" style={{ marginLeft: "auto" }}>
+                  {players.length} players, one spacecraft
+                </span>
+              </div>
+              <div className="team-tally">
+                {decisionsPerPlayer(
+                  players,
+                  sim.decisions.map((decision) => findEventDef(decision.defId)?.affectsPart ?? null),
+                ).map(({ player, count }) => (
+                  <div className="team-tally-row" key={player.index}>
+                    <span aria-hidden="true">{roleOf(player).icon}</span>
+                    <span>
+                      <strong>{player.name}</strong>
+                      <br />
+                      <span className="tiny">{roleOf(player).name}</span>
+                    </span>
+                    <span className="team-tally-count">
+                      {count} {count === 1 ? "call" : "calls"}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
 
           {/* ------------------------------------------------ decisions */}
           {sim && sim.decisions.length > 0 && (

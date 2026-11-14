@@ -15,8 +15,10 @@ import { designFlags } from "../physics/checks";
 import type { SimState } from "../sim/simulation";
 import { createSimulation, resolveEvent, resolveInsertion, step } from "../sim/simulation";
 import { DEMO_SCENARIO, demoSchedule } from "../sim/demo";
+import type { Player } from "../sim/team";
+import { assignRoles } from "../sim/team";
 
-export type Screen = "home" | "choose" | "design" | "launch" | "control" | "result";
+export type Screen = "home" | "team" | "choose" | "design" | "launch" | "control" | "result";
 
 /** What the Design Lab starts with: the cheapest of everything, and nothing to do science with yet. */
 function startingDesign(): Design {
@@ -36,6 +38,8 @@ export interface GameState {
   scenarioId: string | null;
   /** Which of the mission's goals the player chose. Null before they choose. */
   goalId: string | null;
+  /** Who is playing. Empty when it is one person at the keyboard. */
+  players: Player[];
   design: Design;
   launchMonth: number;
   route: Route;
@@ -51,6 +55,8 @@ export interface GameState {
   go: (screen: Screen) => void;
   chooseScenario: (id: string) => void;
   chooseGoal: (id: string) => void;
+  /** Seat a team and hand out the roles. An empty list goes back to solo. */
+  setTeam: (names: string[]) => void;
   startOver: () => void;
 
   /* ---- designing */
@@ -84,6 +90,7 @@ export const useGame = create<GameState>((set, get) => ({
   screen: "home",
   scenarioId: null,
   goalId: null,
+  players: [],
   design: startingDesign(),
   launchMonth: 0,
   route: "slow",
@@ -110,11 +117,15 @@ export const useGame = create<GameState>((set, get) => ({
 
   chooseGoal: (id) => set({ goalId: id }),
 
+  setTeam: (names) =>
+    set({ players: names.length === 0 ? [] : assignRoles(names) }),
+
   startOver: () =>
     set({
       screen: "home",
       scenarioId: null,
       goalId: null,
+      players: [],
       design: startingDesign(),
       launchMonth: 0,
       route: "slow",

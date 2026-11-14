@@ -74,6 +74,9 @@ export default function Home() {
             <button className="btn btn--big" onClick={() => go("choose")}>
               Start a mission
             </button>
+            <button className="btn btn--big" onClick={() => go("team")}>
+              <span aria-hidden="true">👥</span> Play as a team (2–4)
+            </button>
           </div>
 
           <div className="row row--tight jump">

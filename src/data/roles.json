@@ -1,0 +1,41 @@
+{
+  "_note": "Playing as a team, on one screen. Each player owns part of the spacecraft, and when a challenge happens to that part it is their call. The order below is the order roles are handed out, so two players get a Flight Director and a Power Engineer; anything nobody owns falls to the Flight Director, who has the final word.",
+
+  "minPlayers": 1,
+  "maxPlayers": 4,
+
+  "roles": [
+    {
+      "id": "director",
+      "name": "Flight Director",
+      "icon": "🎖️",
+      "owns": ["body"],
+      "blurb": "Owns the bus and the engine, and takes any call nobody else owns."
+    },
+    {
+      "id": "power",
+      "name": "Power Engineer",
+      "icon": "⚡",
+      "owns": ["power"],
+      "blurb": "Owns the solar panels or the nuclear battery. No power, no mission."
+    },
+    {
+      "id": "comms",
+      "name": "Comms Officer",
+      "icon": "📡",
+      "owns": ["antenna"],
+      "blurb": "Owns the antenna. Science nobody can hear is science nobody has."
+    },
+    {
+      "id": "science",
+      "name": "Science Lead",
+      "icon": "🔬",
+      "owns": ["instruments"],
+      "blurb": "Owns the instruments, and everything the mission is actually for."
+    }
+  ],
+
+  "defaultNames": ["Player 1", "Player 2", "Player 3", "Player 4"],
+
+  "_ownsNote": "The engine is not listed against anyone: like anything unclaimed it goes to the Flight Director. Give it its own role here and a fifth player would own it."
+}

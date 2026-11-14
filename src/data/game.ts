@@ -17,6 +17,7 @@ import skyJson from "./sky.json";
 import homeSystemJson from "./homeSystem.json";
 import planetsJson from "./planets.json";
 import ship3dJson from "./ship3d.json";
+import rolesJson from "./roles.json";
 
 /* ------------------------------------------------------------------ parts */
 
@@ -460,6 +461,26 @@ export interface Ship3DConfig {
 }
 
 export const ship3d = ship3dJson as unknown as Ship3DConfig;
+
+/* ------------------------------------------------------- playing as a team */
+
+/** One seat at the table, and the part of the spacecraft it answers for. */
+export interface TeamRole {
+  id: string;
+  name: string;
+  icon: string;
+  owns: ShipPart[];
+  blurb: string;
+}
+
+export interface RolesConfig {
+  minPlayers: number;
+  maxPlayers: number;
+  roles: TeamRole[];
+  defaultNames: string[];
+}
+
+export const roles = rolesJson as unknown as RolesConfig;
 
 /* ---------------------------------------------------------------- lookups */
 

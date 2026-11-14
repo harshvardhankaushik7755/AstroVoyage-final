@@ -3,6 +3,7 @@
  */
 import { useEffect } from "react";
 import Home from "./screens/Home";
+import TeamSetup from "./screens/TeamSetup";
 import ChooseMission from "./screens/ChooseMission";
 import DesignLab from "./screens/DesignLab";
 import Launch from "./screens/Launch";
@@ -68,6 +69,7 @@ export default function App() {
 
       <main className={wide ? "screen screen--wide" : undefined} style={wide ? undefined : { display: "contents" }}>
         {screen === "home" && <Home />}
+        {screen === "team" && <TeamSetup />}
         {screen === "choose" && <ChooseMission />}
         {screen === "design" && <DesignLab />}
         {screen === "launch" && <Launch />}

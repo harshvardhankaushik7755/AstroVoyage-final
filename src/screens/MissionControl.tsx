@@ -37,6 +37,7 @@ import Timeline from "../components/Timeline";
 import { ShipSchematic, ShipSprite } from "../components/Spacecraft";
 import { reducedMotion } from "../App";
 import { playSound } from "../audio";
+import { callSign, isTeam, ownerOf, roleOf } from "../sim/team";
 import { useGame } from "../store/gameStore";
 
 /** Which gauge each of the engine's own words belongs to. */
@@ -56,6 +57,7 @@ export default function MissionControl() {
   const doInsertion = useGame((state) => state.doInsertion);
   const go = useGame((state) => state.go);
   const skipAnimations = useGame((state) => state.skipAnimations);
+  const players = useGame((state) => state.players);
 
   const mapRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 860, h: 520 });
@@ -193,6 +195,7 @@ export default function MissionControl() {
   const hurtPart = sim.pendingEvent?.affectsPart ?? null;
   const damage = sim.pendingEvent ? damageFor(sim.pendingEvent.defId) : null;
   const aimPart = hovered && sim.pendingEvent ? optionPart(sim.pendingEvent.defId, hovered) : null;
+  const whoseCall = event ? ownerOf(players, hurtPart) : null;
 
   /* ---- the trail: where it has been, where it is, and the arc it rides now */
   const trail = [
@@ -505,6 +508,15 @@ export default function MissionControl() {
                     {countdown}s
                   </span>
                 </div>
+
+                {/* Playing as a team, the part that broke decides who answers.
+                    Saying the name out loud is the whole mechanic. */}
+                {isTeam(players) && whoseCall && (
+                  <p className="whose-call">
+                    <span aria-hidden="true">{roleOf(whoseCall).icon}</span>
+                    {callSign(whoseCall)} — this one is yours.
+                  </p>
+                )}
 
                 {/* The spacecraft sits beside the text, not under it, so three
                     options still fit on the card without scrolling. */}

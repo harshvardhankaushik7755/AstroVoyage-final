@@ -140,6 +140,22 @@ const run = async () => {
 
   await checkScreen(page, "01-home");
 
+  /* ---- the team screen: four seats, each with a role and a name box */
+  await page.getByRole("button", { name: /Play as a team/ }).click();
+  await page.waitForTimeout(200);
+  await page.getByRole("button", { name: /^4 players$/ }).click();
+  await page.waitForTimeout(150);
+  const seats = await page.locator(".team-card").count();
+  const roleNames = await page.locator(".team-role").count();
+  if (seats !== 4 || roleNames !== 4) {
+    problem(`team: ${seats} seats and ${roleNames} roles at four players, expected 4 and 4`);
+  } else {
+    note("team: four seats, each with a role");
+  }
+  await checkScreen(page, "01b-team");
+  await page.getByRole("button", { name: /Back/ }).first().click();
+  await page.waitForTimeout(200);
+
   /* ---- Home -> Choose mission */
   await page.getByRole("button", { name: /Start a mission/ }).click();
   await page.waitForTimeout(150);

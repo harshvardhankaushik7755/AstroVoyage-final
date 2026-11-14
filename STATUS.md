@@ -148,3 +148,40 @@ in a real browser, not only in tests.
 **Still not done.** The submission pack: the 30-second video, the project page, a deployed link.
 
 **For Kunal.** NASA resources next, as agreed. Still no git remote.
+
+## 2026-11-14 — Stage 16: a 3D spacecraft, and playing as a team
+
+**The 3D view.** `CLAUDE.md` forbids new UI libraries, so rather than three.js this is a renderer
+written here: rotate every corner, cull the faces pointing away from the eye, divide by distance
+for perspective, sort far-to-near and paint. About two hundred lines, and because it returns flat
+polygons for SVG rather than touching a canvas, all of it is unit-tested — 29 tests on the maths
+alone, including that every box face is wound so its normal points outwards, since a face wound
+backwards is culled exactly when it should be drawn and reads as a hole in the spacecraft.
+
+The model is not a picture either: every size comes from `shipLayout`, the same function that draws
+the flat sprite, so the 3D view is always the machine that is actually flying. Choose the nuclear
+battery and the wings become a finned cylinder on a boom, which is where real ones go.
+
+Files: `src/sim/render3d.ts`, `src/sim/shipModel3d.ts`, `src/components/Ship3D.tsx`,
+`src/components/Ship3DView.tsx`, `src/data/ship3d.json`, + 46 tests. Reachable from the Design Lab
+and Launch.
+
+**Playing as a team, 2–4, one laptop.** Each player owns part of the spacecraft. A challenge that
+hits the panels is the Power Engineer's call, and the card says so by name. Results counts the
+calls each player took. Files: `src/data/roles.json`, `src/sim/team.ts` (22 tests),
+`src/screens/TeamSetup.tsx`, plus the store, MissionControl and Result.
+
+**Decisions I made on my own.**
+- *Anything no role claims falls to the Flight Director*, which is why a team of two still has an
+  owner for every challenge. A test checks every part has exactly one owner at every team size.
+- *The wings are wider in 3D than the sprite's chord.* The sprite is always seen face-on; turned
+  edge-on a narrow wing is a stick.
+- *`measure` now opens the 3D view, counts the faces and checks it is turning.* With no library
+  behind it, a mistake in the maths fails silently as an empty box rather than an error.
+
+**Numbers.** 340 unit tests in 18 files, all passing. `npm run build` passes. `npm run measure`
+passes clean at 1366×650 and 390×844, 26 checks. A full four-player game played end to end in a
+real browser: roles assigned, the card naming the owner, the crew tally on the Results screen.
+
+**Still open.** Music — Kunal said he would say more. The submission pack: video, project page,
+deployed link. NASA resources next.
