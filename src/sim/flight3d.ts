@@ -112,8 +112,15 @@ export function buildScene(sim: SimState, coastDays = 0): Scene3D {
       scene.arrivalOrbitRadius,
       scene.targetRadius + scene.shipSize * 1.4,
     );
-    const riding = (2 * Math.PI * coastDays) / scene.arrivalOrbitDays;
-    const around = onRing(orbitRadius, angles.targetAngleRad + riding);
+    // One lap every `arrivalOrbitSeconds` of REAL time, whatever the mission.
+    // Counting the lap in mission days instead is what made it a blur: a Mars
+    // second is three days, so 1.2 days was a whole lap every 0.4 seconds.
+    const lapDays = Math.max(1e-6, scene.arrivalOrbitSeconds * sim.daysPerSecond);
+    const riding = (2 * Math.PI * coastDays) / lapDays;
+    // Measured from the planet alone, not from the planet's own angle round
+    // the Sun: adding that in made the lap the sum of two different rates, so
+    // the orbit never took the time the data said it would.
+    const around = onRing(orbitRadius, riding);
     ship = { x: target.x + around.x, y: 0, z: target.z + around.z };
   } else {
     const here = transferPosition(progress, config.startRadiusAU, config.targetOrbitRadiusAU);

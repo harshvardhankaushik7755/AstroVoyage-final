@@ -300,6 +300,48 @@ describe("the three camera modes", () => {
   });
 });
 
+describe("the orbit it rides after arrival", () => {
+  /** Where the spacecraft sits, as an angle round the body it reached. */
+  const angleAfter = (id: string, coastDays: number) => {
+    const sim = { ...simFor(id, 2), phase: "orbit" as const };
+    const built = buildScene(sim, coastDays);
+    return Math.atan2(built.ship.z - built.target.z, built.ship.x - built.target.x);
+  };
+
+  it("takes the same real time to go round, whatever the mission", () => {
+    // The whole bug: a lap counted in MISSION days is 0.4 real seconds at
+    // Mars (one second is three days) and half a minute at the Moon (one
+    // second is an hour). Counted in real seconds it is the same everywhere.
+    const lapSeconds = flight3d.scene.arrivalOrbitSeconds;
+    for (const scenario of scenarios) {
+      const sim = simFor(scenario.id, 2);
+      const daysInOneLap = lapSeconds * sim.daysPerSecond;
+      const quarter = angleAfter(scenario.id, daysInOneLap / 4);
+      const start = angleAfter(scenario.id, 0);
+      let turned = quarter - start;
+      while (turned < 0) turned += Math.PI * 2;
+      expect(turned, `${scenario.id} after a quarter lap`).toBeCloseTo(Math.PI / 2, 4);
+    }
+  });
+
+  it("is slow enough to watch: no faster than a lap every ten seconds", () => {
+    expect(flight3d.scene.arrivalOrbitSeconds).toBeGreaterThanOrEqual(10);
+  });
+
+  it("keeps the spacecraft clear of the planet it is going round", () => {
+    for (const scenario of scenarios) {
+      const sim = { ...simFor(scenario.id, 2), phase: "orbit" as const };
+      const built = buildScene(sim, 3);
+      const gap = Math.hypot(built.ship.x - built.target.x, built.ship.z - built.target.z);
+      // Clear of both the planet's own radius and the spacecraft's, or the
+      // two overlap and it reads as having crashed into it.
+      expect(gap, scenario.id).toBeGreaterThan(
+        flight3d.scene.targetRadius + flight3d.scene.shipSize,
+      );
+    }
+  });
+});
+
 describe("points on a ring", () => {
   it("lands on the circle it was asked for, flat in the plane", () => {
     const point = onRing(3, 0.7);

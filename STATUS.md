@@ -274,3 +274,27 @@ took the keyboard focus to the toggle button and left it there. The card takes f
 **For Kunal — the push.** The reason pushing fails is that the GitHub token on this machine has
 expired: `gh auth status` reports "The token in default is invalid." Run `gh auth login`, then
 `gh repo create astrovoyage --public --source=. --push`.
+
+## 2026-11-15 — Stage 20: the arrival orbit was 2.5 laps a second
+
+Kunal: "the satelite is orbitting the planet so fast". He was right, and badly so.
+
+The lap was counted in **mission days** — `arrivalOrbitDays: 1.2`. But a mission second is not a
+fixed number of days: Mars runs at 1 second = 3 days, so 1.2 days went by in 0.4 seconds and the
+spacecraft did **two and a half laps every second**. On the Moon, where a second is an hour, the
+same number crawled round in half a minute. One constant, two useless speeds.
+
+It is counted in **real seconds** now — `arrivalOrbitSeconds: 18` — multiplied by the mission's own
+`daysPerSecond`. One lap every 18 seconds, the same on every mission. Measured in a browser
+afterwards: a steady 16px a second, no blur.
+
+A second bug fell out while testing it. The ride angle was `targetAngleRad + riding`, so the lap
+was the sum of two different rates — the spacecraft's own orbit *plus* the planet's travel round
+the Sun. The Moon test missed by exactly the Moon's own motion, 0.041 radians. It is measured from
+the planet alone now, so a lap takes the time the data says.
+
+Three tests guard it: the quarter-lap lands at exactly a quarter turn on every mission, the lap is
+never faster than ten seconds, and the spacecraft always stays clear of the planet's radius plus
+its own.
+
+**Numbers.** 375 tests in 19 files, build passes, `measure` clean at 1366×650 and 390×844.

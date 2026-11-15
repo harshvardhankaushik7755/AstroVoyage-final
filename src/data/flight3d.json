@@ -38,9 +38,9 @@
     "earthRadius": 0.028,
     "targetRadius": 0.034,
     "shipSize": 0.055,
-    "_arrivalNote": "Once it arrives it circles the body it reached. The radius has to clear the planet AND the spacecraft, or the two overlap and it reads as crashing into it. orbitDays is how long one lap takes in mission days, so it is visibly going round rather than creeping.",
+    "_arrivalNote": "Once it arrives it circles the body it reached. The radius has to clear the planet AND the spacecraft, or the two overlap and it reads as crashing into it. The lap is counted in REAL seconds, not mission days: a Mars second is three days and a Moon second is an hour, so a lap fixed in mission days would crawl on one mission and blur on another.",
     "arrivalOrbitRadius": 0.15,
-    "arrivalOrbitDays": 1.2,
+    "arrivalOrbitSeconds": 18,
     "minPixelRadius": 2.5,
     "maxPixelRadius": 46,
     "gridRings": 3

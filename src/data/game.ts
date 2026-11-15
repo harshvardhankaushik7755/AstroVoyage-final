@@ -515,7 +515,7 @@ export interface Flight3DConfig {
     targetRadius: number;
     shipSize: number;
     arrivalOrbitRadius: number;
-    arrivalOrbitDays: number;
+    arrivalOrbitSeconds: number;
     minPixelRadius: number;
     maxPixelRadius: number;
     gridRings: number;
