@@ -496,6 +496,8 @@ export interface Flight3DConfig {
     followBack: number;
     followLift: number;
     followAhead: number;
+    followSide: number;
+    followSwing: number;
     minPitch: number;
     maxPitch: number;
     dragSensitivity: number;

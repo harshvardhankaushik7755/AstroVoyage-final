@@ -222,3 +222,27 @@ in the maths fails silently as an empty box.
 
 **Still open.** Music — Kunal said he would say more. The submission pack: video, project page,
 deployed link. NASA resources.
+
+## 2026-11-15 — Stage 18: the 3D view actually looks like something
+
+Kunal sent a screenshot of the 3D view and it looked bad. He was right. Three things were wrong.
+
+- **A huge teal blob.** The spacecraft's halo was sized from the capped on-screen radius, so in
+  Follow it became a 240px disc swallowing the middle of the picture. Gone.
+- **A flat 2D sprite pasted onto a 3D scene.** The spacecraft was still the map sprite. It is now
+  the real solid model — the same `shipFaces` the Design Lab's 3D view uses — placed where the
+  mission has got to, turned so its nose agrees with the heading, and lit from the Sun. This took
+  one new function, `renderWith`, which does the same cull-project-sort as the model viewer but
+  through a camera that can stand anywhere.
+- **Lines too faint to read.** The orbits and the flown path were washed out. Brighter and thicker.
+
+Also: the follow camera sat dead astern, so you stared at the spacecraft's back. It is held off to
+one side now, for a three-quarter view, and the spacecraft is drawn half again as large.
+
+Files: `src/sim/render3d.ts` (+`renderWith`), `src/sim/flight3d.ts` (+`shipInScene`),
+`src/components/FlightMap3D.tsx`, `src/data/flight3d.json`.
+
+**Numbers.** 372 tests still passing, build passes, `measure` clean at 1366×650 and 390×844.
+
+**For Kunal.** Four hours to submit. The deployed link is the thing judges click — `npm run build`
+then drag `dist/` onto netlify.com/drop.

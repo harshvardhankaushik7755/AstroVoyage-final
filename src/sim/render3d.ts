@@ -405,3 +405,42 @@ export function sizeAt(radius: number, depth: number, view: View): number {
   if (depth < view.near) return 0;
   return (radius * view.fov) / depth;
 }
+
+/**
+ * The same rotate-cull-project-sort as `render`, but through a camera that can
+ * stand anywhere. Points are already in world space, so nothing is rotated
+ * here: whatever placed them decided which way they face.
+ */
+export function renderWith(
+  faces: Face[],
+  view: View,
+  basis: Basis,
+  centre: Point2,
+  light: Vec3,
+  shading: Shading,
+): DrawnFace[] {
+  const drawn: DrawnFace[] = [];
+
+  for (const face of faces) {
+    let normal = faceNormal(face.points);
+    const middle = centroid(face.points);
+
+    const towardsEye = normalise(subtract(basis.eye, middle));
+    const facing = dot(normal, towardsEye);
+    if (!face.twoSided && facing <= 0) continue;
+    if (face.twoSided && facing < 0) normal = { x: -normal.x, y: -normal.y, z: -normal.z };
+
+    const flat = face.points.map((p) => projectView(p, view, basis, centre));
+    if (flat.some((point) => point === null)) continue;
+
+    drawn.push({
+      points: (flat as (Point2 & { depth: number })[]).map(({ x, y }) => ({ x, y })),
+      color: face.color,
+      part: face.part,
+      depth: toCamera(middle, basis).z,
+      light: lambert(normal, light, shading),
+    });
+  }
+
+  return drawn.sort((a, b) => b.depth - a.depth);
+}

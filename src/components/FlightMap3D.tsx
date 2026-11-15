@@ -17,13 +17,21 @@ import {
   CAMERA_MODES,
   buildScene,
   cameraFor,
+  shipInScene,
   starSphere,
   startingPitch,
 } from "../sim/flight3d";
 import type { CameraMode } from "../sim/flight3d";
-import { projectPath, projectView, sizeAt, viewBasis } from "../sim/render3d";
+import {
+  projectPath,
+  projectView,
+  renderWith,
+  shadeColor,
+  sizeAt,
+  svgPoints,
+  viewBasis,
+} from "../sim/render3d";
 import type { SimState } from "../sim/simulation";
-import { ShipSprite } from "./Spacecraft";
 import Planet from "./Planet";
 
 interface Props {
@@ -150,6 +158,13 @@ export default function FlightMap3D({
       targetRing: projectPath(scene.targetRing, view, basis, centre),
       flownPath: projectPath(scene.path.slice(0, scene.flown + 1), view, basis, centre),
       aheadPath: projectPath(scene.path.slice(scene.flown), view, basis, centre),
+      ship3d: (() => {
+        const built = shipInScene(sim.design, scene);
+        return renderWith(built.faces, view, basis, centre, built.light, {
+          ambient: 0.34,
+          range: 0.66,
+        });
+      })(),
       sun: body(scene.sun, sceneConfig.sunRadius),
       earth: body(scene.earth, sceneConfig.earthRadius),
       target: body(scene.target, sceneConfig.targetRadius),
@@ -209,14 +224,15 @@ export default function FlightMap3D({
         {/* ---- the two orbits */}
         <g fill="none" strokeWidth={1.3}>
           {drawn.startRing.length > 1 && (
-            <polyline points={line(drawn.startRing)} stroke={colors.startRing} opacity={0.75} />
+            <polyline points={line(drawn.startRing)} stroke={colors.startRing} opacity={0.95} strokeWidth={1.6} />
           )}
           {drawn.targetRing.length > 1 && (
             <polyline
               points={line(drawn.targetRing)}
               stroke={colors.targetRing}
-              opacity={0.6}
-              strokeDasharray="4 6"
+              opacity={0.85}
+              strokeWidth={1.6}
+              strokeDasharray="5 6"
             />
           )}
         </g>
@@ -227,15 +243,15 @@ export default function FlightMap3D({
             <polyline
               points={line(drawn.aheadPath)}
               stroke={colors.pathAhead}
-              strokeWidth={1.4}
-              strokeDasharray="3 7"
+              strokeWidth={1.8}
+              strokeDasharray="4 7"
             />
           )}
           {drawn.flownPath.length > 1 && (
             <polyline
               points={line(drawn.flownPath)}
               stroke={colors.pathFlown}
-              strokeWidth={2.2}
+              strokeWidth={2.6}
               strokeLinecap="round"
             />
           )}
@@ -290,12 +306,29 @@ export default function FlightMap3D({
           );
         })}
 
-        {/* ---- and the spacecraft, always on top: it is what you came for */}
-        {drawn.ship && (
-          <g transform={`translate(${drawn.ship.x} ${drawn.ship.y})`}>
-            <circle r={drawn.ship.r * 2.6} fill={colors.trail} opacity={0.12} />
-            <ShipSprite design={sim.design} size={Math.max(16, drawn.ship.r * 2.4)} />
+        {/* ---- and the spacecraft itself, solid, pointed the way it is going.
+             Always on top: it is what you came to watch. A small marker stands
+             in for it when it is too far off to be more than a dot. */}
+        {drawn.ship3d.length > 6 ? (
+          <g>
+            {drawn.ship3d.map((face, index) => (
+              <polygon
+                key={index}
+                points={svgPoints(face.points)}
+                fill={shadeColor(face.color, face.light)}
+                stroke={shadeColor(face.color, face.light * 0.65)}
+                strokeWidth={0.4}
+                strokeLinejoin="round"
+              />
+            ))}
           </g>
+        ) : (
+          drawn.ship && (
+            <g transform={`translate(${drawn.ship.x} ${drawn.ship.y})`}>
+              <circle r={4.5} fill={colors.trail} />
+              <circle r={9} fill="none" stroke={colors.trail} strokeWidth={1} opacity={0.5} />
+            </g>
+          )
         )}
       </svg>
 

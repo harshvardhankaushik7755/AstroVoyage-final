@@ -16,8 +16,10 @@
  * Moon and a five-year haul to Jupiter alike.
  */
 import { flight3d } from "../data/game";
-import type { Vec3, View } from "./render3d";
-import { normalise, subtract } from "./render3d";
+import type { Design } from "../data/game";
+import type { Face, Vec3, View } from "./render3d";
+import { normalise, rotateY, subtract } from "./render3d";
+import { modelExtent, shipFaces } from "./shipModel3d";
 import type { SimState } from "./simulation";
 import {
   coastAngles,
@@ -164,7 +166,7 @@ export function cameraFor(scene: Scene3D, mode: CameraMode, options: CameraOptio
     // Astern and above, which is where a chase camera belongs. The spin from
     // auto-rotate swings that position round the spacecraft.
     const side = normalise({ x: -heading.z, y: 0, z: heading.x });
-    const swing = Math.sin(options.spin * 0.5) * 0.35;
+    const swing = camera.followSide + Math.sin(options.spin * 0.5) * camera.followSwing;
 
     const eye: Vec3 = {
       x: ship.x - heading.x * camera.followBack + side.x * swing * camera.followBack,
@@ -226,4 +228,50 @@ export function starSphere(): { at: Vec3; size: number }[] {
       size: 0.4 + roll() * 1.3,
     };
   });
+}
+
+/**
+ * The spacecraft you built, as a solid, standing where it actually is and
+ * pointed the way it is actually going.
+ *
+ * The model is built nose-along-+x, so it is turned about the up axis until
+ * its nose agrees with the heading, scaled down to `shipSize` system-widths,
+ * and carried out to where the mission has got to.
+ */
+export function shipInScene(
+  design: Design,
+  scene: Scene3D,
+): { faces: Face[]; light: Vec3 } {
+  const model = shipFaces(design);
+  const extent = modelExtent(model) || 1;
+  const size = flight3d.scene.shipSize / extent;
+
+  // The model's nose runs along +x; rotateY(p, -angle) swings it to the heading.
+  const angle = -Math.atan2(scene.heading.z, scene.heading.x);
+
+  const faces = model.map((face) => ({
+    ...face,
+    points: face.points.map((point) => {
+      const turned = rotateY(
+        { x: point.x * size, y: point.y * size, z: point.z * size },
+        angle,
+      );
+      return {
+        x: scene.ship.x + turned.x,
+        y: scene.ship.y + turned.y,
+        z: scene.ship.z + turned.z,
+      };
+    }),
+  }));
+
+  // Lit from the Sun, which is at the middle of everything.
+  const away = Math.hypot(scene.ship.x, scene.ship.y, scene.ship.z) || 1;
+  return {
+    faces,
+    light: {
+      x: -scene.ship.x / away,
+      y: 0.35,
+      z: -scene.ship.z / away,
+    },
+  };
 }
