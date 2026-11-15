@@ -18,7 +18,15 @@ import { DEMO_SCENARIO, demoSchedule } from "../sim/demo";
 import type { Player } from "../sim/team";
 import { assignRoles } from "../sim/team";
 
-export type Screen = "home" | "team" | "choose" | "design" | "launch" | "control" | "result";
+export type Screen =
+  | "home"
+  | "team"
+  | "choose"
+  | "design"
+  | "launch"
+  | "control"
+  | "result"
+  | "resources";
 
 /** What the Design Lab starts with: the cheapest of everything, and nothing to do science with yet. */
 function startingDesign(): Design {

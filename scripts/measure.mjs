@@ -417,6 +417,137 @@ const run = async () => {
     await shoot(page, "09-nasa-sources");
   }
 
+
+  /* ---- the GMAT export: the mission as a real NASA script.
+         A screenshot cannot prove the file is valid, so the preview is read
+         back and checked for the structure GMAT actually enforces. */
+  // Escape first, then the close button, then force it — and keep going until
+  // the backdrop is really gone. A modal left open silently blocks every click
+  // after it, which reads as a dozen unrelated failures.
+  const closeAny = async () => {
+    for (let tries = 0; tries < 4; tries += 1) {
+      if ((await page.locator(".backdrop").count()) === 0) return;
+      await page.keyboard.press("Escape");
+      await page.waitForTimeout(180);
+      if ((await page.locator(".backdrop").count()) === 0) return;
+      const close = page.locator(".dialog-close").first();
+      if ((await close.count()) > 0) {
+        await close.click({ force: true, timeout: 2500 }).catch(() => {});
+      }
+      await page.waitForTimeout(180);
+    }
+    if ((await page.locator(".backdrop").count()) > 0) {
+      problem("a dialog would not close, so the checks after it cannot be trusted");
+    }
+  };
+  await closeAny();
+
+  const gmatButton = page.getByRole("button", { name: /Download GMAT script/ }).first();
+  if ((await gmatButton.count()) === 0) {
+    problem("results: no GMAT export button");
+  } else {
+    note("results: GMAT export offered");
+    await page.getByRole("button", { name: /Look at it first/ }).first().click();
+    await page.waitForTimeout(250);
+    const script = await page.locator(".gmat-pre").textContent().catch(() => null);
+    if (!script) {
+      problem("GMAT preview: nothing shown");
+    } else {
+      const must = [
+        "%General Mission Analysis Tool(GMAT) Script",
+        "Create Spacecraft AstroVoyage;",
+        "Create ChemicalTank MainTank;",
+        "Create Propagator MissionProp;",
+        "BeginMissionSequence;",
+        "Maneuver DepartureBurn",
+      ];
+      const missing = must.filter((line) => !script.includes(line));
+      if (missing.length > 0) problem(`GMAT preview: missing ${missing.join(" / ")}`);
+      else note(`GMAT preview: a valid script, ${script.split("\n").length} lines`);
+
+      if (/NaN|undefined|Infinity/.test(script)) problem("GMAT preview: a broken number in the script");
+      const begins = script.split("BeginMissionSequence;").length - 1;
+      if (begins !== 1) problem(`GMAT preview: ${begins} BeginMissionSequence lines, expected 1`);
+    }
+    await shoot(page, "10-gmat-script");
+    await closeAny();
+  }
+
+  /* ---- the Mission Design Lab review, back on the Design Lab */
+  const backToDesign = page.getByRole("button", { name: /Change the design/ }).first();
+  if ((await backToDesign.count()) > 0) {
+    await backToDesign.click();
+    await page.waitForTimeout(350);
+
+    const review = page.getByRole("button", { name: /NASA Design Review/ }).first();
+    if ((await review.count()) === 0) {
+      problem("design: no NASA Design Review panel");
+    } else {
+      await review.click();
+      await page.waitForTimeout(250);
+      const rows = await page.locator(".mdl-row").count();
+      if (rows !== 5) problem(`design review: ${rows} subsystem rows, expected 5`);
+      else note("design review: all 5 subsystems reported");
+
+      const verdict = await page.locator(".mdl-verdict").first().textContent().catch(() => null);
+      if (!verdict) problem("design review: no verdict");
+      else note(`design review: verdict "${verdict.trim()}"`);
+
+      // Every row must show three real numbers, not a dash or a NaN.
+      const nums = await page.locator(".mdl-num-val").allTextContents();
+      if (nums.length < 15) problem(`design review: only ${nums.length} numbers, expected 15`);
+      if (nums.some((value) => !/[0-9]/.test(value))) problem("design review: a row with no number");
+
+      // The review opens as a dialog now, so the dialog is what to read back.
+      const body = await page.locator(".dialog").textContent();
+      if (/NaN|undefined|Infinity/.test(body)) problem("design review: a broken number on screen");
+
+      await checkScreen(page, "11-design-review", { mayScroll: true });
+
+      const why = page.getByRole("button", { name: /Where these percentages come from/ }).first();
+      if ((await why.count()) === 0) {
+        problem("design review: no source for the percentages");
+      } else {
+        await why.click();
+        await page.waitForTimeout(200);
+        const ntrs = await page.locator(".dialog a[href*='ntrs.nasa.gov']").count();
+        if (ntrs < 1) problem("design review: the NASA paper is not cited");
+        else note("design review: cites the NASA paper it takes its numbers from");
+        await shoot(page, "12-review-sources");
+        await closeAny();
+      }
+    }
+  }
+
+  /* ---- the NASA resources screen, which is what the challenge asks for */
+  const resourcesLink = page.getByRole("button", { name: /NASA resources/ }).first();
+  if ((await resourcesLink.count()) === 0) {
+    problem("no way to reach the NASA resources screen");
+  } else {
+    await resourcesLink.click();
+    await page.waitForTimeout(350);
+
+    const cards = await page.locator(".res").count();
+    if (cards < 10) problem(`resources: only ${cards} resources listed`);
+    else note(`resources: ${cards} NASA resources listed`);
+
+    const text = await page.locator(".resources").textContent();
+    const named = ["GMAT", "Mission Design Lab", "Jet Propulsion Laboratory", "Contingency pile-up"];
+    const absent = named.filter((name) => !text.includes(name));
+    if (absent.length > 0) problem(`resources: does not mention ${absent.join(" / ")}`);
+    else note("resources: names GMAT, the MDL, JPL and the pile-up");
+
+    const outbound = await page.locator(".resources a[href^='http']").count();
+    if (outbound < 10) problem(`resources: only ${outbound} links out`);
+    else note(`resources: ${outbound} links to the real resources`);
+
+    // Every resource must say what it was used FOR, not just what it is.
+    const used = await page.locator(".res-used").count();
+    if (used < cards) problem(`resources: ${cards - used} resources do not say what they were used for`);
+
+    await checkScreen(page, "13-nasa-resources", { mayScroll: true });
+  }
+
   await browser.close();
 
   /* ---------------------------------------------------------------- verdict */

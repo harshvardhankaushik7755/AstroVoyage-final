@@ -1,0 +1,113 @@
+{
+  "_note": "How NASA's Mission Design Lab decides whether a design is real. The MDL is part of Goddard's Integrated Design Center: a room of subsystem engineers who size a mission concept together in about a week. They never sign off on the numbers an engineer first writes down - they add a contingency to every one, then check the design still fits. These are those contingencies.",
+  "_source": "Karpati, G., Hyde, T., Peabody, H., Garrison, M., 'Resource Management and Contingencies in Aerospace Concurrent Engineering', NASA Goddard Space Flight Center, 2012. NTRS 20120013284. Section on the discipline-by-discipline contingency and margin policies in use at the IDC.",
+  "_url": "https://ntrs.nasa.gov/citations/20120013284",
+
+  "phase": "Pre-Phase A concept study",
+  "lab": "Mission Design Lab, Integrated Design Center, NASA Goddard",
+
+  "_definitionsNote": "The three numbers every subsystem reports. The whole method is the gap between them: you design with MEV, not CBE, because parts always get heavier than the first guess.",
+  "definitions": [
+    {
+      "term": "CBE",
+      "name": "Current Best Estimate",
+      "plain": "What we think it weighs, draws or sends today.",
+      "detail": "The honest number from the engineer who owns that box, with nothing added for safety."
+    },
+    {
+      "term": "MEV",
+      "name": "Maximum Expected Value",
+      "plain": "What it could realistically grow to before it launches.",
+      "detail": "CBE plus a contingency. Real parts almost always get heavier and hungrier between the first drawing and the launch pad, so this is the number a careful engineer actually designs to."
+    },
+    {
+      "term": "MPV",
+      "name": "Maximum Possible Value",
+      "plain": "The hard limit. The rocket, the panels or the dish cannot go past this.",
+      "detail": "Set by the hardware you picked, not by opinion. If MEV goes past MPV the design does not close and something has to change."
+    }
+  ],
+
+  "_formulaNote": "Straight out of the paper, which argues that the bare words 'contingency' and 'margin' cause real confusion and should always be qualified.",
+  "formulas": [
+    { "id": "growthContingency", "label": "Growth contingency", "expression": "(MEV - CBE) / CBE", "plain": "How much room for growth you added, measured against today's estimate." },
+    { "id": "resourceContingency", "label": "Resource contingency", "expression": "(MEV - CBE) / MEV", "plain": "The same room, measured against the grown number instead." },
+    { "id": "growthMargin", "label": "Growth margin", "expression": "(MPV - MEV) / MEV", "plain": "How much spare you still have above the grown number." },
+    { "id": "resourceMargin", "label": "Resource margin", "expression": "(MPV - MEV) / MPV", "plain": "The same spare, measured against the hard limit." }
+  ],
+
+  "_contingencyNote": "The percentages the IDC actually adds, by subsystem. Each one is quoted from the paper in `quote`, so nothing here is invented.",
+  "contingencies": [
+    {
+      "id": "mass",
+      "subsystem": "Mechanical",
+      "label": "Dry mass",
+      "percent": 0.25,
+      "appliesTo": "Everything that is not fuel: the bus, the instruments, the panels, the dish, the engine.",
+      "quote": "25% contingency is carried over the CBE mass of an avionics box.",
+      "plain": "Add a quarter to the weight. Parts always come in heavier than the drawing."
+    },
+    {
+      "id": "power",
+      "subsystem": "Electrical Power",
+      "label": "Power",
+      "percent": 0.3,
+      "appliesTo": "Every instrument, the radio and the engine, added up.",
+      "quote": "the power delivered have a minimum of 30% contingency over the total CBE loads",
+      "plain": "The panels must make a third more than everything on board asks for."
+    },
+    {
+      "id": "dataRate",
+      "subsystem": "RF Communications",
+      "label": "Data rate",
+      "percent": 0.3,
+      "appliesTo": "The science data the instruments produce.",
+      "quote": "The RF Comm subsystem gets the CBE data rate from Science, and adds 30% contingency to it.",
+      "plain": "Assume the instruments make a third more data than they promised."
+    },
+    {
+      "id": "deltaV",
+      "subsystem": "Guidance, Navigation and Control",
+      "label": "Delta-v (ACS tax)",
+      "percent": 0.05,
+      "appliesTo": "The speed change the whole trip needs.",
+      "quote": "Add 5 % ACS Tax on all delta-v numbers.",
+      "plain": "Pointing and steering burn fuel too. The paper calls this a tax, because every mission pays it."
+    },
+    {
+      "id": "propellant",
+      "subsystem": "Propulsion",
+      "label": "Propellant residuals",
+      "percent": 0.05,
+      "appliesTo": "The fuel you load.",
+      "quote": "Add 3% to 5% for ullage and residuals on total propellant",
+      "plain": "You can never use the last drop in the tank. Some fuel is always left clinging inside."
+    }
+  ],
+
+  "_pileUpNote": "The paper's sharpest warning, and the reason a design can fail review even when every single subsystem followed the rules. Each engineer adds their own contingency to a number that already had one added. The game shows this as the composite contingency.",
+  "pileUp": {
+    "title": "Contingency pile-up",
+    "quote": "concurrent design products are vulnerable to contingency pile-ups, especially so to hidden contingency pile-ups",
+    "plain": "Every team adds their own safety margin on top of a number that already had one. Do it four times and the spacecraft is far heavier than anybody intended.",
+    "example": "Science says it makes 10 kbps. Comms adds 30% and picks a bigger radio. That radio draws more power, so Power adds 30% on top and fits bigger panels. Bigger panels weigh more, so Mechanical adds 25% and fits stronger struts. Nobody broke a rule, and the spacecraft doubled.",
+    "warnAbovePercent": 0.3
+  },
+
+  "_verdictNote": "What the review says at the end. A design that closes on CBE but not on MEV is the interesting case: it is the one that looks fine and is not.",
+  "verdicts": [
+    { "id": "closes", "label": "Design closes", "plain": "Every subsystem fits even after NASA's contingency is added. The Mission Design Lab would sign this off." },
+    { "id": "tight", "label": "Closes, but tight", "plain": "It fits, but with almost nothing spare. A real review would ask you to find more margin before Phase A." },
+    { "id": "doesNotClose", "label": "Does not close", "plain": "It fits on paper but not once contingency is added. This is exactly the design a review exists to catch." }
+  ],
+
+  "_marginNote": "The spare a project manager is expected to still be holding when the concept study ends. Goddard's own figure.",
+  "expectedMarginAtPhaseB": 0.25,
+  "expectedMarginSource": "Di Pietro, D., NASA Goddard: the project manager at the start of Phase B holds 25% margins for power and dry mass resources.",
+
+  "_toneNote": "Thresholds for the colour of each row. Resource margin above comfortable is green, above tight is amber, below zero is red.",
+  "tone": {
+    "comfortable": 0.2,
+    "tight": 0.0
+  }
+}

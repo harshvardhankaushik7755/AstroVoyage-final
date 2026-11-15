@@ -38,6 +38,32 @@ It works on a phone, where every screen stacks into one column:
 |---|---|
 | ![Mission Control on a phone](docs/screenshots/10-mobile.png) | ![A challenge on a phone](docs/screenshots/11-mobile-challenge.png) |
 
+## The NASA resources behind it
+
+Press **NASA resources** in the top bar, on any screen. Eleven NASA tools, datasets and papers,
+each with what we actually took from it and the file it lives in — written up in full in
+**[NASA_RESOURCES.md](NASA_RESOURCES.md)**.
+
+Four of them do real work:
+
+- **[GMAT](https://software.nasa.gov/software/GSC-18094-1)** — NASA's own mission design program.
+  Your finished mission **exports as a real GMAT script**: your dry mass, your fuel, your engine's
+  Isp, your departure burn, in GMAT's own script language. Open it in GMAT and press Run.
+- **[Mission Design Lab](https://idc.gsfc.nasa.gov/)** — Goddard's concurrent engineering room.
+  The **NASA Design Review** in the Design Lab asks what the MDL asks: not "does it fit?" but
+  "does it *still* fit once every subsystem adds its required contingency?" Five subsystems,
+  each reporting CBE → MEV against MPV.
+- **[Karpati et al., NASA Goddard 2012](https://ntrs.nasa.gov/citations/20120013284)** — the paper
+  that writes those contingencies down. Every percentage in the review is **quoted** from it:
+  +25% dry mass, +30% power, +30% data rate, +5% Δv. Including its warning about *contingency
+  pile-up*, which the game reports as your composite contingency.
+- **[JPL Horizons & Solar System Dynamics](https://ssd.jpl.nasa.gov/horizons/)** — the measured
+  constants. Launch windows are derived from real orbital periods, not picked: 779.94 days for
+  Mars, 398.88 for Jupiter.
+
+All three mission presets pass the launch checks and **fail** the Design Review — on dry mass for
+Mars and on power for Jupiter. That is the point, and both are real engineering history.
+
 ## The physics is real
 
 Nothing in the flight is faked. Open **"Where the numbers come from"** on the Design Lab, Launch or

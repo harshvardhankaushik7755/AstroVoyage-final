@@ -1,0 +1,73 @@
+{
+  "_note": "Settings for exporting the player's mission as a real NASA GMAT script. GMAT (General Mission Analysis Tool) is NASA's open-source mission design program, built at Goddard and used on real flight projects. A script written in this format opens in GMAT and propagates. That is the point of the feature: the mission a 12-year-old designed in the game can be loaded into the same tool a NASA analyst uses.",
+  "_url": "https://software.nasa.gov/software/GSC-18094-1",
+  "_sourceUrl": "https://sourceforge.net/projects/gmat/",
+  "_syntaxNote": "GMAT's own GUI writes scripts in exactly this shape: 'Create <Type> <name>;' for resources, then 'GMAT <name>.<Property> = <value>;' for each setting, '%' to start a comment, and a single 'BeginMissionSequence;' after every resource is created and before the first command. Resource names ChemicalTank and ChemicalThruster are the R2018a-and-later spellings (they were FuelTank and Thruster before that).",
+  "targetVersion": "R2022a",
+
+  "spacecraftName": "AstroVoyage",
+  "epoch": "01 Jan 2026 00:00:00.000",
+  "dateFormat": "UTCGregorian",
+
+  "_propagatorNote": "A Prince-Dormand 78 integrator, which is GMAT's workhorse for interplanetary propagation, with the accuracy GMAT itself defaults to.",
+  "propagator": {
+    "type": "PrinceDormand78",
+    "initialStepSize": 60,
+    "accuracy": 1e-12,
+    "minStep": 0,
+    "maxStep": 86400
+  },
+
+  "_coefficientNote": "Drag and reflectivity coefficients. 2.2 and 1.8 are GMAT's own defaults and the usual first-cut values for a boxy spacecraft.",
+  "coefficients": {
+    "cd": 2.2,
+    "cr": 1.8,
+    "dragAreaPerTonne": 15,
+    "srpAreaPerTonne": 15
+  },
+
+  "_bodyNote": "Which GMAT central body and coordinate system each mission uses, and the point masses worth including in the force model. Keyed by scenario id. GMAT calls the Moon 'Luna'.",
+  "bodies": {
+    "moon": {
+      "centralBody": "Earth",
+      "coordinateSystem": "EarthMJ2000Eq",
+      "primaryBodies": ["Earth"],
+      "pointMasses": ["Luna", "Sun"],
+      "gravityDegree": 8,
+      "gravityOrder": 8,
+      "targetBody": "Luna",
+      "parkingAltitudeKm": 400,
+      "inclinationDeg": 28.5
+    },
+    "mars": {
+      "centralBody": "Sun",
+      "coordinateSystem": "SunEcliptic",
+      "primaryBodies": [],
+      "pointMasses": ["Sun", "Earth", "Luna", "Mars"],
+      "gravityDegree": 0,
+      "gravityOrder": 0,
+      "targetBody": "Mars",
+      "parkingAltitudeKm": 400,
+      "inclinationDeg": 23.5
+    },
+    "jupiter": {
+      "centralBody": "Sun",
+      "coordinateSystem": "SunEcliptic",
+      "primaryBodies": [],
+      "pointMasses": ["Sun", "Earth", "Luna", "Jupiter"],
+      "gravityDegree": 0,
+      "gravityOrder": 0,
+      "targetBody": "Jupiter",
+      "parkingAltitudeKm": 400,
+      "inclinationDeg": 23.5
+    }
+  },
+
+  "_outputNote": "What GMAT should draw and write when the script runs, so the file does something visible the moment it is opened rather than propagating silently.",
+  "output": {
+    "orbitView": true,
+    "groundTrack": false,
+    "reportFile": true,
+    "reportVariables": ["ElapsedDays", "Earth.Altitude", "TotalMass"]
+  }
+}

@@ -9,6 +9,7 @@ import DesignLab from "./screens/DesignLab";
 import Launch from "./screens/Launch";
 import MissionControl from "./screens/MissionControl";
 import Result from "./screens/Result";
+import Resources from "./screens/Resources";
 import { useGame } from "./store/gameStore";
 
 /** True when the player's system asks for less movement. */
@@ -19,6 +20,7 @@ export function reducedMotion(): boolean {
 
 export default function App() {
   const screen = useGame((state) => state.screen);
+  const go = useGame((state) => state.go);
   const scenarioId = useGame((state) => state.scenarioId);
   const startOver = useGame((state) => state.startOver);
   const setSkipAnimations = useGame((state) => state.setSkipAnimations);
@@ -50,6 +52,18 @@ export default function App() {
           </span>
         )}
         <span className="topbar-spacer" />
+        {/* Always reachable: the NASA resources behind the game are the first
+            thing a judge goes looking for, and burying them on the home page
+            would mean finding them by luck. */}
+        {screen !== "control" && screen !== "resources" && (
+          <button
+            className="btn btn--small"
+            onClick={() => go("resources")}
+            title="The NASA tools, data and papers this game is built on"
+          >
+            <span aria-hidden="true">📐</span> NASA resources
+          </button>
+        )}
         {scenarioId && screen !== "home" && (
           <button className="btn btn--ghost btn--small" onClick={startOver}>
             Start over
@@ -75,6 +89,7 @@ export default function App() {
         {screen === "launch" && <Launch />}
         {screen === "control" && <MissionControl />}
         {screen === "result" && <Result />}
+        {screen === "resources" && <Resources />}
       </main>
     </div>
   );

@@ -298,3 +298,29 @@ never faster than ten seconds, and the spacecraft always stays clear of the plan
 its own.
 
 **Numbers.** 375 tests in 19 files, build passes, `measure` clean at 1366×650 and 390×844.
+
+## 2026-11-15 — Stage 13: NASA resources — GMAT export, the Mission Design Lab review, a resources screen
+
+**Built.** `sim/gmatExport.ts` turns the player's design into a real NASA GMAT script (dry mass,
+fuel, Isp, parking orbit, departure burn) — downloadable and previewable on the Result screen.
+`physics/margins.ts` is the Mission Design Lab review: CBE → MEV vs MPV for five subsystems, with
+the composite contingency and the paper's contingency pile-up. New screen `screens/Resources.tsx`
+lists 11 NASA resources with what each was used for and the file it lives in. Data:
+`mdlPolicy.json`, `gmat.json`, `jplConstants.json`, `nasaResources.json`. Plus `NASA_RESOURCES.md`.
+
+**Decisions I made alone.** (1) Every margin percentage is *quoted* from Karpati et al. 2012
+(NTRS 20120013284) rather than estimated — each entry in `mdlPolicy.json` carries its sentence.
+(2) The review is **advisory, not blocking**: all three presets fail it (Mars on dry mass, Jupiter
+on power), which is real history and a teaching moment, but it must not stop a 12-year-old flying.
+(3) It lives behind a footnote button, not a panel — the Design Lab has no spare pixels at 650px.
+(4) Composite contingency compares like with like (fuel *required*, not fuel *loaded*), or filling
+the tank made it come out negative.
+
+**Fixed while testing.** GMAT listed Earth as both a primary body and a point mass, which GMAT
+rejects. The topbar overflowed a 390px phone once it gained a fourth button.
+
+**Numbers.** 485 tests in 20 files (+110), build passes, `measure` 41 checks clean at 1366×650 and
+390×844 — including that the exported script is structurally valid GMAT.
+
+**For Kunal.** Worth recording ~30s of the GMAT preview + Design Review for the submission video;
+it is the strongest "we used NASA resources" evidence we have. The music is still not started.

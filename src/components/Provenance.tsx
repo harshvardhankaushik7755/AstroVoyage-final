@@ -7,6 +7,7 @@
  * make this up?", and it takes one click to find.
  */
 import { useState } from "react";
+import type { ReactNode } from "react";
 import type { NasaSource } from "../data/game";
 import { nasaSources } from "../data/game";
 import Dialog from "./Dialog";
@@ -29,12 +30,22 @@ const GROUPS: { kind: NasaSource["kind"]; heading: string; blurb: string }[] = [
   },
 ];
 
-export default function Provenance() {
+interface Props {
+  /**
+   * Rendered in the same footnote row, before the button. The Design Lab has
+   * to fit a 650px window without scrolling, so a second footnote row there
+   * is 36px it does not have.
+   */
+  children?: ReactNode;
+}
+
+export default function Provenance({ children }: Props) {
   const [open, setOpen] = useState(false);
 
   return (
     <>
       <div className="footnote">
+        {children}
         <button className="btn btn--ghost btn--small" onClick={() => setOpen(true)}>
           Where the numbers come from
         </button>

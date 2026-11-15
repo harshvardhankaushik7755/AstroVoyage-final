@@ -1,10 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
+  contingencyFor,
   eventDefs,
   findBody,
   findEventDef,
   findRealMission,
   glossary,
+  gmat,
+  jpl,
+  mdlPolicy,
+  nasaResources,
   nasaSources,
   parts,
   presetDesign,
@@ -316,5 +321,171 @@ describe("glossary", () => {
     for (const needed of ["δv", "isp", "launch window", "au", "rtg"]) {
       expect(terms, `missing ${needed}`).toContain(needed);
     }
+  });
+});
+
+describe("the NASA resource list", () => {
+  it("has no duplicate ids", () => {
+    expect(duplicateIds(nasaResources)).toEqual([]);
+  });
+
+  it("says what each resource is, what we used it for, and where that lives", () => {
+    for (const resource of nasaResources) {
+      expect(resource.name.length, resource.id).toBeGreaterThan(3);
+      expect(resource.org.length, resource.id).toBeGreaterThan(3);
+      // "What it is" and "what we used it for" are the two claims a judge
+      // checks. A resource listed without the second one is just a link.
+      expect(resource.whatItIs.length, resource.id).toBeGreaterThan(40);
+      expect(resource.usedFor.length, resource.id).toBeGreaterThan(40);
+      expect(resource.where.length, resource.id).toBeGreaterThan(3);
+    }
+  });
+
+  it("links every resource somewhere real over https", () => {
+    for (const resource of nasaResources) {
+      expect(resource.url, resource.id).toMatch(/^https:\/\//);
+      if (resource.altUrl) expect(resource.altUrl, resource.id).toMatch(/^https:\/\//);
+    }
+  });
+
+  it("leads with the four that do real work", () => {
+    const headline = nasaResources.filter((resource) => resource.headline);
+    expect(headline).toHaveLength(4);
+    // GMAT, the Mission Design Lab, the paper behind the review, and JPL.
+    expect(headline.map((resource) => resource.id).sort()).toEqual([
+      "gmat",
+      "jplHorizons",
+      "karpati2012",
+      "mdl",
+    ]);
+  });
+
+  it("names a real NASA or AIAA home for all but nothing", () => {
+    for (const resource of nasaResources) {
+      expect(resource.url, resource.id).toMatch(/nasa\.gov|aiaa\.org|sourceforge\.net|github\.com/);
+    }
+  });
+});
+
+describe("the Mission Design Lab policy", () => {
+  it("defines CBE, MEV and MPV", () => {
+    expect(mdlPolicy.definitions.map((entry) => entry.term)).toEqual(["CBE", "MEV", "MPV"]);
+  });
+
+  it("carries all four margin formulas", () => {
+    expect(mdlPolicy.formulas).toHaveLength(4);
+    for (const formula of mdlPolicy.formulas) {
+      expect(formula.expression).toMatch(/CBE|MEV|MPV/);
+    }
+  });
+
+  it("quotes the NASA paper for every contingency, so no percentage is invented", () => {
+    expect(mdlPolicy.contingencies.length).toBeGreaterThanOrEqual(5);
+    for (const entry of mdlPolicy.contingencies) {
+      expect(entry.percent, entry.id).toBeGreaterThan(0);
+      expect(entry.percent, entry.id).toBeLessThan(1);
+      // The sentence it came from. Without this the number is just a claim.
+      expect(entry.quote.length, entry.id).toBeGreaterThan(15);
+      expect(entry.plain.length, entry.id).toBeGreaterThan(20);
+    }
+  });
+
+  it("finds a contingency by id and refuses an unknown one", () => {
+    expect(contingencyFor("power").percent).toBeCloseTo(0.3, 10);
+    expect(contingencyFor("mass").percent).toBeCloseTo(0.25, 10);
+    // @ts-expect-error — an id outside the union is exactly what should throw.
+    expect(() => contingencyFor("nonsense")).toThrow();
+  });
+
+  it("offers a verdict for each outcome the review can reach", () => {
+    expect(mdlPolicy.verdicts.map((entry) => entry.id).sort()).toEqual([
+      "closes",
+      "doesNotClose",
+      "tight",
+    ]);
+  });
+});
+
+describe("the measured JPL constants", () => {
+  it("uses the defined values of the AU, the speed of light and g0", () => {
+    // These three are defined exactly by international agreement, so they are
+    // not approximations and must not drift.
+    expect(jpl.universal.astronomicalUnitKm).toBe(149597870.7);
+    expect(jpl.universal.speedOfLightKmS).toBe(299792.458);
+    expect(jpl.universal.standardGravityMS2).toBe(9.80665);
+  });
+
+  it("derives light time per AU from those two, rather than stating it", () => {
+    const derived = jpl.universal.astronomicalUnitKm / jpl.universal.speedOfLightKmS;
+    expect(jpl.universal.lightTimePerAuSeconds).toBeCloseTo(derived, 3);
+    expect(jpl.universal.lightTimePerAuMinutes).toBeCloseTo(derived / 60, 4);
+  });
+
+  it("gets each planet's sunlight share from the inverse-square law", () => {
+    for (const id of ["mars", "jupiter"] as const) {
+      const body = jpl.bodies[id];
+      const expected = 1 / (body.semiMajorAxisAu! * body.semiMajorAxisAu!);
+      expect(body.sunlightShare, id).toBeCloseTo(expected, 3);
+    }
+  });
+
+  it("gets each launch window from the two real orbit periods", () => {
+    const earth = jpl.bodies.earth.orbitDays!;
+    for (const id of ["mars", "jupiter"] as const) {
+      const planet = jpl.bodies[id].orbitDays!;
+      const synodic = 1 / Math.abs(1 / earth - 1 / planet);
+      expect(jpl.synodic[id].days, id).toBeCloseTo(synodic, 0);
+      // And the whole number of months the game actually shows the player.
+      expect(jpl.synodic[id].gameMonths, id).toBe(Math.round(jpl.synodic[id].months));
+    }
+  });
+
+  it("agrees with the scenarios the game ships", () => {
+    for (const scenario of scenarios) {
+      const body = jpl.bodies[scenario.id];
+      if (!body) continue;
+      expect(body.orbitDays, scenario.id).toBeCloseTo(scenario.targetOrbitDays, 0);
+      if (scenario.centralBody === "sun") {
+        expect(body.semiMajorAxisAu, scenario.id).toBeCloseTo(scenario.distanceAU, 1);
+      }
+      if (scenario.windowMonths > 0) {
+        expect(jpl.synodic[scenario.id].gameMonths, scenario.id).toBe(scenario.windowMonths);
+      }
+    }
+  });
+
+  it("gives every body a positive GM and radius", () => {
+    for (const [id, body] of Object.entries(jpl.bodies)) {
+      expect(body.gmKm3S2, id).toBeGreaterThan(0);
+      expect(body.radiusKm, id).toBeGreaterThan(0);
+      expect(body.source.length, id).toBeGreaterThan(5);
+    }
+  });
+});
+
+describe("the GMAT export settings", () => {
+  it("has a setup for every mission the game ships", () => {
+    for (const scenario of scenarios) {
+      expect(gmat.bodies[scenario.id], scenario.id).toBeDefined();
+    }
+  });
+
+  it("names a target body and a parking orbit for each mission", () => {
+    for (const [id, body] of Object.entries(gmat.bodies)) {
+      expect(body.targetBody.length, id).toBeGreaterThan(2);
+      expect(body.parkingAltitudeKm, id).toBeGreaterThan(100);
+      expect(body.pointMasses.length, id).toBeGreaterThan(0);
+      // Whether a body appears in both lists is not checked here: GMAT rejects
+      // that, and the exporter filters it, which gmatExport.test.ts proves.
+      // Asserting it on the data too would just forbid a harmless convenience.
+      expect(body.coordinateSystem.length, id).toBeGreaterThan(3);
+    }
+  });
+
+  it("propagates with a real integrator and a sane step", () => {
+    expect(gmat.propagator.type).toBe("PrinceDormand78");
+    expect(gmat.propagator.accuracy).toBeGreaterThan(0);
+    expect(gmat.propagator.initialStepSize).toBeGreaterThan(0);
+    expect(gmat.propagator.maxStep).toBeGreaterThanOrEqual(gmat.propagator.initialStepSize);
   });
 });

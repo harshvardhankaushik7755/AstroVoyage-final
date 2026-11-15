@@ -1,0 +1,153 @@
+[
+  {
+    "_note": "The NASA resources this game is built on. `usedFor` is deliberately specific: it names the file or screen, so anybody can check the claim instead of taking our word for it.",
+    "id": "gmat",
+    "name": "GMAT — General Mission Analysis Tool",
+    "org": "NASA Goddard Space Flight Center",
+    "kind": "tool",
+    "url": "https://software.nasa.gov/software/GSC-18094-1",
+    "altUrl": "https://sourceforge.net/projects/gmat/",
+    "whatItIs": "NASA's own mission design program, and it is free for anyone to download. Engineers use it to plan where a spacecraft goes and how much fuel the trip needs. It has been used on real flight projects.",
+    "usedFor": "Your finished mission exports as a real GMAT script. Press \"Download GMAT script\" and you get a .script file holding your spacecraft's dry mass, fuel load, engine Isp, parking orbit and transfer burn, written in GMAT's own script language. Open it in GMAT and it propagates.",
+    "where": "Result screen · src/sim/gmatExport.ts",
+    "headline": true
+  },
+  {
+    "id": "mdl",
+    "name": "Mission Design Lab (Integrated Design Center)",
+    "org": "NASA Goddard Space Flight Center",
+    "kind": "process",
+    "url": "https://idc.gsfc.nasa.gov/",
+    "altUrl": "https://www.nasa.gov/podcasts/small-steps-giant-leaps/small-steps-giant-leaps-podcast-episode-151-designing-missions/",
+    "whatItIs": "A room at Goddard where engineers from every subsystem — power, propulsion, comms, mechanical — sit together for about a week and size a whole mission concept at once. It is called concurrent engineering. At the end they say whether the design closes.",
+    "usedFor": "The Design Review in the Design Lab is modelled on it. Your design is checked the way the MDL checks one: every number gets NASA's contingency added before anything is approved, and the review reports CBE, MEV and MPV per subsystem — not just pass or fail. The team roles are the MDL's subsystem leads.",
+    "where": "Design Lab → Design Review · src/physics/margins.ts",
+    "headline": true
+  },
+  {
+    "id": "karpati2012",
+    "name": "Resource Management and Contingencies in Aerospace Concurrent Engineering",
+    "org": "Karpati, Hyde, Peabody & Garrison — NASA Goddard, 2012",
+    "kind": "paper",
+    "url": "https://ntrs.nasa.gov/citations/20120013284",
+    "altUrl": "https://ntrs.nasa.gov/api/citations/20120013284/downloads/20120013284.pdf",
+    "whatItIs": "The paper that writes down, subsystem by subsystem, how much safety margin the Mission Design Lab adds to every number — and warns about what happens when each team adds its own on top of everybody else's.",
+    "usedFor": "Every percentage in the Design Review is quoted from this paper: 25% on dry mass, 30% on power, 30% on data rate, a 5% ACS tax on delta-v, 5% for propellant residuals. The CBE/MEV/MPV definitions and all four margin formulas are its. So is \"contingency pile-up\", which the game shows as your composite contingency.",
+    "where": "src/data/mdlPolicy.json — each entry carries the sentence it came from",
+    "headline": true
+  },
+  {
+    "id": "jplHorizons",
+    "name": "JPL Horizons & Solar System Dynamics",
+    "org": "NASA Jet Propulsion Laboratory",
+    "kind": "data",
+    "url": "https://ssd.jpl.nasa.gov/horizons/",
+    "altUrl": "https://ssd.jpl.nasa.gov/planets/approx_pos.html",
+    "whatItIs": "JPL's record of where every planet actually is, at any date, to an accuracy real missions navigate by. The numbers behind it come from the DE ephemeris files.",
+    "usedFor": "The orbit radii and periods the map turns on: Mars at 1.52 AU in 687 days, Jupiter at 5.2 AU in 4,333 days, the Moon round Earth in 27.3 days. Launch windows are worked out from those real periods, which is why Mars opens about every 26 months rather than a number we picked.",
+    "where": "src/data/jplConstants.json · src/physics/windows.ts",
+    "headline": true
+  },
+  {
+    "id": "jplOpenSource",
+    "name": "JPL open-source repositories",
+    "org": "NASA Jet Propulsion Laboratory",
+    "kind": "tool",
+    "url": "https://github.com/nasa-jpl",
+    "altUrl": "https://naif.jpl.nasa.gov/naif/toolkit.html",
+    "whatItIs": "JPL publishes a lot of its flight and analysis software openly, including the SPICE toolkit that nearly every deep-space mission uses to answer \"where is everything right now\".",
+    "usedFor": "We could not ship SPICE itself in a browser game, so we did the honest next thing: we use SPICE's conventions — the J2000 ecliptic frame, bodies as point masses, angles in radians from a fixed epoch — and we say so. The GMAT script we export names the same bodies SPICE does, including \"Luna\" for the Moon.",
+    "where": "src/sim/simulation.ts · src/data/gmat.json",
+    "headline": false
+  },
+  {
+    "id": "nssdca",
+    "name": "NSSDCA Planetary Fact Sheets & Master Catalog",
+    "org": "NASA Goddard — National Space Science Data Coordinated Archive",
+    "kind": "data",
+    "url": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html",
+    "altUrl": "https://nssdc.gsfc.nasa.gov/nmc/",
+    "whatItIs": "NASA's archive of measured numbers for every planet, and a catalogue entry for every spacecraft ever launched.",
+    "usedFor": "Planet radii, gravity and distances, the sunlight share at Mars (43%) and Jupiter (3.7%), and the real launch years, agencies and power systems of the five missions we compare your design against.",
+    "where": "src/data/jplConstants.json · src/data/realMissions.json",
+    "headline": false
+  },
+  {
+    "id": "sstSoa",
+    "name": "State-of-the-Art of Small Spacecraft Technology",
+    "org": "NASA Ames — Small Spacecraft Systems Virtual Institute",
+    "kind": "report",
+    "url": "https://www.nasa.gov/smallsat-institute/sst-soa",
+    "whatItIs": "A report NASA updates every year listing what small spacecraft hardware can actually do right now — how much each part weighs, what power it needs, how well engines perform.",
+    "usedFor": "The parts catalogue. Bus masses, instrument power draws, antenna data rates, and the engine Isp figures: 320 s for a chemical engine and 3,000 s for an ion engine are real, which is why the ion engine needs so startlingly little fuel.",
+    "where": "src/data/parts.json",
+    "headline": false
+  },
+  {
+    "id": "dsn",
+    "name": "Deep Space Network",
+    "org": "NASA JPL",
+    "kind": "data",
+    "url": "https://eyes.nasa.gov/apps/dsn-now/",
+    "altUrl": "https://deepspace.jpl.nasa.gov/",
+    "whatItIs": "The three giant dish complexes — Goldstone, Madrid and Canberra — that every deep-space mission talks to Earth through. Spaced around the planet so one is always facing out.",
+    "usedFor": "Signal delay, worked out from the real speed of light: 8.317 minutes per AU, each way. It is why the Jupiter mission cannot be flown by reacting to problems, and why the game makes you choose in advance instead.",
+    "where": "src/physics/comms.ts",
+    "headline": false
+  },
+  {
+    "id": "rps",
+    "name": "Radioisotope Power Systems",
+    "org": "NASA",
+    "kind": "data",
+    "url": "https://rps.nasa.gov/",
+    "whatItIs": "NASA's programme for the nuclear batteries that power spacecraft too far from the Sun for panels to work. They make electricity from heat, so distance does not matter to them.",
+    "usedFor": "The RTG part: its mass, its cost, and the fact that its power does not fall off with distance. That single property is what makes the Jupiter mission solvable.",
+    "where": "src/data/parts.json · src/physics/power.ts",
+    "headline": false
+  },
+  {
+    "id": "grcRockets",
+    "name": "Beginner's Guide to Rockets",
+    "org": "NASA Glenn Research Center",
+    "kind": "education",
+    "url": "https://www.grc.nasa.gov/WWW/K-12/rocket/",
+    "whatItIs": "NASA's own teaching pages on how rockets work, written for school students.",
+    "usedFor": "The rocket equation, in the form NASA teaches it: delta-v = Isp x g0 x ln(m0/mf), with g0 = 9.80665 m/s². No simplification. It is the same equation that decides whether your fuel load is enough.",
+    "where": "src/physics/rocketEquation.ts",
+    "headline": false
+  },
+  {
+    "id": "aiaaS120",
+    "name": "AIAA S-120 — Mass Properties Control for Space Systems",
+    "org": "American Institute of Aeronautics and Astronautics",
+    "kind": "standard",
+    "url": "https://www.aiaa.org/publications/standards",
+    "whatItIs": "The industry standard for tracking spacecraft mass as a design grows. Not a NASA document, but it is the one the Goddard paper names as the standard the Mission Design Lab works to.",
+    "usedFor": "Cited for honesty: our mass growth allowance follows the practice this standard sets out, which is where the Mission Design Lab's own mass rules come from.",
+    "where": "src/data/mdlPolicy.json",
+    "headline": false
+  },
+  {
+    "id": "nasaScience",
+    "name": "NASA Science missions",
+    "org": "NASA",
+    "kind": "education",
+    "url": "https://science.nasa.gov/",
+    "whatItIs": "NASA's own pages on every science mission it flies, and what went right and wrong on each.",
+    "usedFor": "The \"Real story\" line on every challenge card. Each one is something that actually happened to a real spacecraft, with the year it happened, so a surprise in the game is never invented trouble.",
+    "where": "src/data/events.json",
+    "headline": false
+  },
+  {
+    "id": "openData",
+    "name": "NASA Open Data Portal",
+    "org": "NASA",
+    "kind": "data",
+    "url": "https://data.nasa.gov/",
+    "whatItIs": "NASA's catalogue of public datasets, which is where you go when you need a number nobody has written up in a fact sheet.",
+    "usedFor": "Our starting point for checking figures we could not source anywhere else. Where it gave us nothing usable we said so instead of guessing: those numbers are marked \"Game value we chose\" in the game.",
+    "where": "src/data/nasaSources.json",
+    "headline": false
+  }
+]

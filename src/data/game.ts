@@ -19,6 +19,10 @@ import planetsJson from "./planets.json";
 import ship3dJson from "./ship3d.json";
 import rolesJson from "./roles.json";
 import flight3dJson from "./flight3d.json";
+import mdlPolicyJson from "./mdlPolicy.json";
+import gmatJson from "./gmat.json";
+import nasaResourcesJson from "./nasaResources.json";
+import jplConstantsJson from "./jplConstants.json";
 
 /* ------------------------------------------------------------------ parts */
 
@@ -577,3 +581,165 @@ export function presetDesign(scenario: Scenario): Design {
     fuelKg: p.fuelKg,
   };
 }
+
+/* ------------------------------------------- NASA Mission Design Lab policy */
+
+/** One of CBE, MEV or MPV, explained in words a 12-year-old can hold. */
+export interface MdlDefinition {
+  term: string;
+  name: string;
+  plain: string;
+  detail: string;
+}
+
+export interface MdlFormula {
+  id: string;
+  label: string;
+  expression: string;
+  plain: string;
+}
+
+/** A contingency the Mission Design Lab adds to one subsystem's numbers. */
+export interface MdlContingency {
+  id: "mass" | "power" | "dataRate" | "deltaV" | "propellant";
+  subsystem: string;
+  label: string;
+  /** 0.25 means "add a quarter". */
+  percent: number;
+  appliesTo: string;
+  /** The sentence in the NASA paper this percentage comes from. */
+  quote: string;
+  plain: string;
+}
+
+export interface MdlVerdictText {
+  id: "closes" | "tight" | "doesNotClose";
+  label: string;
+  plain: string;
+}
+
+export interface MdlPolicy {
+  phase: string;
+  lab: string;
+  definitions: MdlDefinition[];
+  formulas: MdlFormula[];
+  contingencies: MdlContingency[];
+  pileUp: {
+    title: string;
+    quote: string;
+    plain: string;
+    example: string;
+    warnAbovePercent: number;
+  };
+  verdicts: MdlVerdictText[];
+  expectedMarginAtPhaseB: number;
+  expectedMarginSource: string;
+  tone: { comfortable: number; tight: number };
+}
+
+export const mdlPolicy = mdlPolicyJson as unknown as MdlPolicy;
+
+/** The contingency for one subsystem, by id. Never undefined: the data is fixed. */
+export function contingencyFor(id: MdlContingency["id"]): MdlContingency {
+  const found = mdlPolicy.contingencies.find((entry) => entry.id === id);
+  if (!found) throw new Error(`No MDL contingency called "${id}"`);
+  return found;
+}
+
+/* ------------------------------------------------------ the GMAT export */
+
+export interface GmatBody {
+  centralBody: string;
+  coordinateSystem: string;
+  primaryBodies: string[];
+  pointMasses: string[];
+  gravityDegree: number;
+  gravityOrder: number;
+  targetBody: string;
+  parkingAltitudeKm: number;
+  inclinationDeg: number;
+}
+
+export interface GmatConfig {
+  targetVersion: string;
+  spacecraftName: string;
+  epoch: string;
+  dateFormat: string;
+  propagator: {
+    type: string;
+    initialStepSize: number;
+    accuracy: number;
+    minStep: number;
+    maxStep: number;
+  };
+  coefficients: {
+    cd: number;
+    cr: number;
+    dragAreaPerTonne: number;
+    srpAreaPerTonne: number;
+  };
+  bodies: Record<string, GmatBody>;
+  output: {
+    orbitView: boolean;
+    groundTrack: boolean;
+    reportFile: boolean;
+    reportVariables: string[];
+  };
+}
+
+export const gmat = gmatJson as unknown as GmatConfig;
+
+/** The GMAT settings for one mission. Falls back to the Mars-style heliocentric setup. */
+export function gmatBody(scenarioId: string): GmatBody {
+  return gmat.bodies[scenarioId] ?? gmat.bodies.mars;
+}
+
+/* -------------------------------------------------- the NASA resource list */
+
+export interface NasaResource {
+  id: string;
+  name: string;
+  org: string;
+  kind: "tool" | "data" | "paper" | "report" | "process" | "standard" | "education";
+  url: string;
+  altUrl?: string;
+  whatItIs: string;
+  usedFor: string;
+  where: string;
+  /** The four we lead with, because they are the ones doing real work. */
+  headline: boolean;
+}
+
+export const nasaResources = nasaResourcesJson as unknown as NasaResource[];
+
+/* ------------------------------------------------ measured JPL constants */
+
+export interface JplBody {
+  name: string;
+  gmKm3S2: number;
+  radiusKm: number;
+  equatorialRadiusKm?: number;
+  orbitsAround?: string;
+  semiMajorAxisKm?: number;
+  semiMajorAxisAu?: number;
+  orbitDays?: number;
+  eccentricity?: number;
+  sunlightShare?: number;
+  source: string;
+}
+
+export interface JplConstants {
+  universal: {
+    astronomicalUnitKm: number;
+    speedOfLightKmS: number;
+    lightTimePerAuSeconds: number;
+    lightTimePerAuMinutes: number;
+    standardGravityMS2: number;
+    solarConstantWM2: number;
+  };
+  bodies: Record<string, JplBody>;
+  synodic: Record<string, { days: number; months: number; gameMonths: number; note: string }>;
+  referenceDeltaVKmS: Record<string, number | string>;
+}
+
+export const jpl = jplConstantsJson as unknown as JplConstants;

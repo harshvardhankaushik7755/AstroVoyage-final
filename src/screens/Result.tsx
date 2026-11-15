@@ -13,6 +13,7 @@ import { scoreHeadline, scoreMission } from "../sim/score";
 import { findEventDef } from "../data/game";
 import MissionSummary from "../components/MissionSummary";
 import Provenance from "../components/Provenance";
+import GmatExport from "../components/GmatExport";
 import { useGame, useScenario } from "../store/gameStore";
 import { decisionsPerPlayer, isTeam, roleOf } from "../sim/team";
 
@@ -262,6 +263,7 @@ export default function Result() {
           <div className="panel">
             <div className="panel-title">What you flew</div>
             <MissionSummary design={design} fuelKg={sim?.fuelKg} />
+            <GmatExport design={design} scenario={scenario} route={route} goal={goal} small />
           </div>
         </div>
       </div>

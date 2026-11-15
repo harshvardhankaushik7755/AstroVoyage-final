@@ -1,0 +1,111 @@
+{
+  "_note": "Measured constants, not game values. Nothing in this file was chosen to make the game fun - these are the numbers real missions are navigated with, and every one carries the source it came from. If a number in the game disagrees with this file, this file is right.",
+  "_sources": {
+    "jplSsd": "https://ssd.jpl.nasa.gov/planets/phys_par.html",
+    "jplApproxPos": "https://ssd.jpl.nasa.gov/planets/approx_pos.html",
+    "horizons": "https://ssd.jpl.nasa.gov/horizons/",
+    "nssdca": "https://nssdc.gsfc.nasa.gov/planetary/factsheet/index.html"
+  },
+
+  "_universalNote": "Defined exactly by international agreement rather than measured, so these carry no uncertainty at all.",
+  "universal": {
+    "astronomicalUnitKm": 149597870.7,
+    "astronomicalUnitSource": "IAU 2012 Resolution B2 - the AU is now a defined number of metres, not a measurement.",
+    "speedOfLightKmS": 299792.458,
+    "speedOfLightSource": "Defined exactly, 1983 SI definition of the metre.",
+    "lightTimePerAuSeconds": 499.004784,
+    "lightTimePerAuMinutes": 8.3167464,
+    "lightTimeNote": "Falls straight out of the two numbers above: one AU divided by the speed of light. This is where the game's 8.317 minutes per AU comes from.",
+    "standardGravityMS2": 9.80665,
+    "standardGravitySource": "g0, defined exactly by the 3rd CGPM, 1901. The rocket equation needs it to turn Isp in seconds into a speed.",
+    "solarConstantWM2": 1361,
+    "solarConstantSource": "Total solar irradiance at 1 AU, NASA/NOAA consensus value."
+  },
+
+  "_bodyNote": "gmKm3S2 is GM, the gravitational parameter: the mass multiplied by the gravitational constant. Orbit mechanics only ever needs the product, and it is known far more precisely than either part on its own. radiusKm is the mean radius.",
+  "bodies": {
+    "sun": {
+      "name": "Sun",
+      "gmKm3S2": 1.32712440018e11,
+      "radiusKm": 695700,
+      "source": "JPL SSD physical parameters"
+    },
+    "earth": {
+      "name": "Earth",
+      "gmKm3S2": 398600.4418,
+      "radiusKm": 6371.0,
+      "equatorialRadiusKm": 6378.137,
+      "semiMajorAxisAu": 1.00000261,
+      "orbitDays": 365.256363,
+      "orbitNote": "The sidereal year: one full lap against the stars.",
+      "source": "JPL SSD / NSSDCA Earth fact sheet"
+    },
+    "moon": {
+      "name": "Moon",
+      "gmKm3S2": 4902.8,
+      "radiusKm": 1737.4,
+      "orbitsAround": "earth",
+      "semiMajorAxisKm": 384400,
+      "semiMajorAxisAu": 0.00256955,
+      "orbitDays": 27.321661,
+      "orbitNote": "The sidereal month. The game's 27.3 days is this, rounded.",
+      "source": "NSSDCA Moon fact sheet"
+    },
+    "mars": {
+      "name": "Mars",
+      "gmKm3S2": 42828.37,
+      "radiusKm": 3389.5,
+      "equatorialRadiusKm": 3396.2,
+      "semiMajorAxisAu": 1.52371034,
+      "orbitDays": 686.98,
+      "eccentricity": 0.0934,
+      "sunlightShare": 0.431,
+      "sunlightNote": "1 / 1.52371034^2. The game's \"43% of Earth's sunlight\" is this number.",
+      "source": "JPL SSD approximate positions / NSSDCA Mars fact sheet"
+    },
+    "jupiter": {
+      "name": "Jupiter",
+      "gmKm3S2": 1.26686534e8,
+      "radiusKm": 69911,
+      "equatorialRadiusKm": 71492,
+      "semiMajorAxisAu": 5.202887,
+      "orbitDays": 4332.589,
+      "eccentricity": 0.0489,
+      "sunlightShare": 0.0369,
+      "sunlightNote": "1 / 5.202887^2. The game's \"3.7% of Earth's sunlight\" is this number.",
+      "source": "JPL SSD approximate positions / NSSDCA Jupiter fact sheet"
+    }
+  },
+
+  "_synodicNote": "How often a planet lines up with Earth again, which is what sets a launch window. Worked out from the two orbit periods: 1/synodic = |1/earth - 1/planet|. The game rounds these to whole months.",
+  "synodic": {
+    "mars": {
+      "days": 779.94,
+      "months": 25.6,
+      "gameMonths": 26,
+      "note": "This is why a Mars window opens about every 26 months, and why missing one costs over two years."
+    },
+    "jupiter": {
+      "days": 398.88,
+      "months": 13.1,
+      "gameMonths": 13,
+      "note": "Jupiter moves so slowly that Earth laps it almost once a year."
+    },
+    "moon": {
+      "days": 0,
+      "months": 0,
+      "gameMonths": 0,
+      "note": "The Moon is already in orbit around Earth, so there is no window to wait for at all."
+    }
+  },
+
+  "_deltaVNote": "Roughly what each trip costs in speed change, from low Earth orbit. Real figures, for checking the game's numbers are in the right range rather than for driving them.",
+  "referenceDeltaVKmS": {
+    "leoToMoonOrbit": 4.1,
+    "leoToMarsTransfer": 3.6,
+    "marsOrbitInsertion": 1.0,
+    "leoToJupiterTransfer": 6.3,
+    "jupiterOrbitInsertion": 1.5,
+    "source": "Standard Hohmann transfer budgets, consistent with NASA mission reports."
+  }
+}

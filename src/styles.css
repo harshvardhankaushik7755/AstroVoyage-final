@@ -156,6 +156,22 @@ a {
   z-index: 20;
 }
 
+/* Four controls will not fit a 390px phone on one line, and a topbar that
+   overflows pushes the sound toggle off the edge of the screen entirely. Let
+   it wrap instead; the spacer that pins things apart is what stops it, so on a
+   narrow screen it stands down. */
+@media (max-width: 560px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .topbar .topbar-spacer {
+    display: none;
+  }
+}
+
 .brand {
   font-weight: 700;
   letter-spacing: 0.2px;
@@ -2079,5 +2095,524 @@ a {
 @media (max-width: 560px) {
   .event-body {
     grid-template-columns: 1fr;
+  }
+}
+
+/* =========================================================================
+   NASA resources screen, the Mission Design Lab review, and the GMAT export.
+   ========================================================================= */
+
+/* ---- the resources screen ------------------------------------------------ */
+
+.resources {
+  position: relative;
+  max-width: 1120px;
+}
+
+.res-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.res-grid--big {
+  grid-template-columns: repeat(auto-fit, minmax(330px, 1fr));
+}
+
+.res {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+/* The four that do real work get a lit top edge, so the eye starts there. */
+.res--big {
+  border-color: #2f4d7a;
+  box-shadow:
+    var(--shadow),
+    inset 0 1px 0 rgb(90 169 255 / 35%);
+}
+
+.res-head {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.res-name {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.3;
+}
+
+.res--big .res-name {
+  font-size: 18px;
+}
+
+.res-org {
+  margin: 0;
+  color: var(--faint);
+  font-size: 12px;
+}
+
+.res-kind {
+  align-self: flex-start;
+  background: var(--bg-2);
+  color: var(--dim);
+}
+
+.res-kind--tool {
+  color: var(--accent);
+  border-color: #2f4d7a;
+}
+
+.res-kind--paper {
+  color: var(--accent-2);
+  border-color: #3c3470;
+}
+
+.res-kind--process {
+  color: var(--science);
+  border-color: #27564a;
+}
+
+.res-kind--data {
+  color: var(--good);
+  border-color: #1f5340;
+}
+
+.res-what {
+  margin: 0;
+  color: var(--dim);
+  font-size: 13.5px;
+}
+
+/* The claim that matters: what we actually took from it. */
+.res-used {
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+}
+
+.res-used p {
+  margin: 4px 0 0;
+  font-size: 13.5px;
+}
+
+.res-used-label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.res-foot {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: auto;
+  flex-wrap: wrap;
+}
+
+.res-where {
+  font-size: 11.5px;
+  color: var(--faint);
+  background: var(--bg);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  padding: 3px 7px;
+  overflow-wrap: anywhere;
+}
+
+/* ---- the method panel */
+
+.res-method {
+  margin-bottom: 18px;
+}
+
+.res-sub {
+  margin-top: 16px;
+}
+
+.res-cont {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.res-cont-row {
+  display: flex;
+  gap: 11px;
+  align-items: flex-start;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+}
+
+.res-cont-pct {
+  font-family: var(--mono);
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--warn);
+  min-width: 52px;
+  text-align: right;
+}
+
+.res-cont-body {
+  font-size: 13px;
+  min-width: 0;
+}
+
+.res-quote {
+  color: var(--faint);
+  font-style: italic;
+}
+
+.res-pileup {
+  background: linear-gradient(180deg, #2a1c2c 0%, var(--bg-2) 100%);
+  border: 1px solid #5a3550;
+  border-radius: var(--radius-sm);
+  padding: 12px;
+}
+
+.res-pileup h4 {
+  margin: 0 0 6px;
+  color: var(--warn);
+}
+
+.res-pileup p {
+  margin: 0 0 7px;
+  font-size: 13.5px;
+}
+
+.res-example {
+  color: var(--dim);
+  border-left: 2px solid var(--line);
+  padding-left: 10px;
+}
+
+.res-actions {
+  margin: 18px 0 8px;
+}
+
+/* ---- the Mission Design Lab review ------------------------------------- */
+
+/* The trigger sits in the footnote row and carries the verdict, so the news
+   arrives without a click. */
+.mdl-trigger {
+  gap: 7px;
+}
+
+/* The verdict chip would otherwise make this button taller than a plain one,
+   and the Design Lab has no spare pixels: it has to fit a 650px window with no
+   scrollbar. Scoped to the trigger so chips everywhere else keep their size. */
+.mdl-trigger .chip {
+  padding: 1px 7px;
+  font-size: 11px;
+  line-height: 1.35;
+}
+
+.footnote {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 8px;
+}
+
+.mdl-verdict--ok {
+  color: var(--good);
+  border-color: #1f5340;
+}
+
+.mdl-verdict--warn {
+  color: var(--warn);
+  border-color: #6a5420;
+}
+
+.mdl-verdict--bad {
+  color: var(--bad);
+  border-color: #6d2f36;
+}
+
+.mdl-banner {
+  display: grid;
+  gap: 2px;
+  padding: 10px 12px;
+  margin-bottom: 11px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-left: 3px solid var(--line);
+}
+
+.mdl-banner strong {
+  font-size: 15px;
+}
+
+.mdl-banner span {
+  font-size: 12.5px;
+  color: var(--dim);
+}
+
+.mdl-banner p {
+  margin: 5px 0 0;
+  font-size: 13px;
+}
+
+.mdl-banner--ok {
+  border-left-color: var(--good);
+}
+
+.mdl-banner--ok strong {
+  color: var(--good);
+}
+
+.mdl-banner--warn {
+  border-left-color: var(--warn);
+}
+
+.mdl-banner--warn strong {
+  color: var(--warn);
+}
+
+.mdl-banner--bad {
+  border-left-color: var(--bad);
+}
+
+.mdl-banner--bad strong {
+  color: var(--bad);
+}
+
+.mdl-legend {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+  color: var(--faint);
+  padding-bottom: 9px;
+}
+
+.mdl-rows {
+  display: grid;
+  gap: 8px;
+}
+
+.mdl-row {
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-left: 3px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 9px 11px;
+}
+
+.mdl-row--good {
+  border-left-color: var(--good);
+}
+
+.mdl-row--tight {
+  border-left-color: var(--warn);
+}
+
+.mdl-row--bad {
+  border-left-color: var(--bad);
+  background: linear-gradient(180deg, #2a1620 0%, var(--bg-2) 100%);
+}
+
+.mdl-row-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.mdl-mark {
+  font-weight: 700;
+}
+
+.mdl-row--good .mdl-mark {
+  color: var(--good);
+}
+
+.mdl-row--tight .mdl-mark {
+  color: var(--warn);
+}
+
+.mdl-row--bad .mdl-mark {
+  color: var(--bad);
+}
+
+.mdl-row-name {
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+}
+
+.mdl-row-margin {
+  font-family: var(--mono);
+  font-size: 12px;
+  color: var(--dim);
+  white-space: nowrap;
+}
+
+.mdl-nums {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin: 7px 0 5px;
+}
+
+.mdl-num {
+  display: flex;
+  flex-direction: column;
+}
+
+/* 11px is the floor: the headless check fails anything smaller as unreadable,
+   and it is right to. */
+.mdl-num-label {
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--faint);
+  line-height: 1.25;
+}
+
+.mdl-num-val {
+  font-family: var(--mono);
+  font-variant-numeric: tabular-nums;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.mdl-num-val--mev {
+  color: var(--warn);
+}
+
+.mdl-arrow,
+.mdl-unit {
+  font-size: 11px;
+  color: var(--faint);
+  padding-bottom: 2px;
+}
+
+.mdl-msg {
+  margin: 0;
+  font-size: 13px;
+  color: var(--dim);
+}
+
+.mdl-total {
+  margin-top: 11px;
+  padding: 10px 12px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  border-radius: var(--radius-sm);
+}
+
+.mdl-total--warn {
+  border-color: #6a5420;
+  background: linear-gradient(180deg, #2a2418 0%, var(--bg-2) 100%);
+}
+
+.mdl-total-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 11px;
+  font-size: 13.5px;
+}
+
+.mdl-total-row strong {
+  font-family: var(--mono);
+  white-space: nowrap;
+}
+
+.mdl-total p {
+  margin: 6px 0 0;
+  color: var(--dim);
+}
+
+.mdl-why {
+  margin-top: 11px;
+}
+
+.mdl-why-body {
+  margin-top: 8px;
+  border-top: 1px solid var(--line-soft);
+  padding-top: 9px;
+}
+
+.mdl-foot {
+  margin: 10px 0 0;
+  color: var(--faint);
+  text-align: right;
+}
+
+/* ---- the GMAT export ---------------------------------------------------- */
+
+.gmat {
+  margin-top: 11px;
+  padding: 11px;
+  background: linear-gradient(180deg, #11223c 0%, var(--bg-2) 100%);
+  border: 1px solid #2f4d7a;
+  border-radius: var(--radius-sm);
+  display: grid;
+  gap: 9px;
+}
+
+.gmat-copy strong {
+  display: block;
+  margin-bottom: 3px;
+}
+
+.gmat-copy .tiny {
+  margin: 0;
+  color: var(--dim);
+}
+
+.gmat-actions {
+  flex-wrap: wrap;
+}
+
+/* The script itself. Monospace, scrollable, and small enough that the shape of
+   a GMAT file is visible at a glance rather than one line at a time. */
+.gmat-pre {
+  margin: 0 0 11px;
+  padding: 11px;
+  max-height: 46vh;
+  overflow: auto;
+  background: var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: 11.5px;
+  line-height: 1.45;
+  white-space: pre;
+  color: var(--dim);
+  tab-size: 2;
+}
+
+@media (max-width: 720px) {
+  .res-grid,
+  .res-grid--big {
+    grid-template-columns: 1fr;
+  }
+
+  .mdl-nums {
+    gap: 5px;
+  }
+
+  .res-cont-row {
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .res-cont-pct {
+    text-align: left;
+    min-width: 0;
   }
 }

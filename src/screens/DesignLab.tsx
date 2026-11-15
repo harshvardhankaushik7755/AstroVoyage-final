@@ -15,6 +15,7 @@ import { Checks, ResourceBars } from "../components/ResourceBars";
 import Glossary from "../components/Glossary";
 import Ship3DView from "../components/Ship3DView";
 import Provenance from "../components/Provenance";
+import MdlReview from "../components/MdlReview";
 import { useGame, useScenario } from "../store/gameStore";
 
 interface GroupSpec {
@@ -267,7 +268,12 @@ export default function DesignLab() {
         </div>
       </div>
 
-      <Provenance />
+      {/* The checks above ask "does it fit?". The review asks what NASA asks:
+          does it still fit once every subsystem adds its safety margin? It
+          shares the footnote row so the Design Lab still fits a short window. */}
+      <Provenance>
+        <MdlReview design={design} scenario={scenario} route={route} />
+      </Provenance>
     </div>
   );
 }
