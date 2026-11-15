@@ -25,7 +25,9 @@ jobs:
           # Match the Node/npm the lock file was made with (npm 11), or `npm ci` rejects it.
           node-version: 24
           cache: npm
-      - run: npm ci
+      # Not `npm ci`: a lock file written on Windows lacks some Linux-only optional
+      # packages (@emnapi/*), and `npm ci` refuses it. `npm install` fills them in.
+      - run: npm install --no-audit --no-fund
       - run: npm test
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
