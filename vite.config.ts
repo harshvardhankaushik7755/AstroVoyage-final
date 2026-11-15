@@ -4,6 +4,8 @@ import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   plugins: [react()],
+  // Relative paths, so the build works on GitHub Pages under /<repo-name>/ as well as at a root.
+  base: "./",
   test: {
     globals: true,
     // Physics and simulation tests are pure TypeScript and need no DOM.
