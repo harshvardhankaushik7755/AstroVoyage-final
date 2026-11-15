@@ -29,7 +29,7 @@ including a green *opportunity* and the follow-up that choosing it causes later.
 |---|---|
 | ![Home](docs/screenshots/01-home.png)<br>**Home** — and the solar system really is turning | ![Choose a mission](docs/screenshots/02-choose.png)<br>**Choose** — and pick what you are going there to do |
 | ![Design Lab](docs/screenshots/03b-design-lab-ready.png)<br>**Design Lab** — six part groups, four live bars | ![Launch calendar](docs/screenshots/04-launch.png)<br>**Launch** — the green months are real launch windows |
-| ![The spacecraft in 3D](docs/screenshots/03c-ship-3d.png)<br>**In 3D** — and the renderer is ours | ![Arrival](docs/screenshots/07-arrival.png)<br>**Arrival** — and the planets keep moving |
+| ![The spacecraft in 3D](docs/screenshots/03c-ship-3d.png)<br>**In 3D** — and the renderer is ours | ![The mission in 3D](docs/screenshots/05b-flight-3d.png)<br>**3D** — orbit, track or follow |
 | ![Results](docs/screenshots/08-results.png)<br>**Results** — score, stars and the Flight Director | ![Where the numbers come from](docs/screenshots/09-nasa-sources.png)<br>**Every number, sourced** — to NASA, or marked as ours |
 
 It works on a phone, where every screen stacks into one column:
@@ -70,6 +70,13 @@ See [NASA_RESOURCES.md](NASA_RESOURCES.md) for every NASA resource used and what
   times, because at true scale Earth would sit inside the Sun and Jupiter would take eleven minutes
   to go round. One CSS keyframe per ring, so there is no animation loop, and
   `prefers-reduced-motion` stops it dead.
+- **The whole mission in 3D, with three cameras.** Press **3D** in Mission Control and the flat map
+  becomes a solar system you can fly round. **Orbit** swings right round the lot. **Track** hangs
+  back but keeps the spacecraft centred, so the system wheels behind it. **Follow** rides astern of
+  the spacecraft and looks where it is going. The camera turns on its own; drag to take hold of it.
+  The stars sit on a sphere far outside the mission, so swinging the camera sweeps them past the
+  way a real sky moves. The orbits lie flat because the real ones very nearly do — what makes the
+  picture read as solid is the camera's tilt, not a tilt in the solar system.
 - **A 3D view of the spacecraft you built**, with the renderer written here rather than imported.
   Rotate the corners, cull the faces pointing away, divide by distance for perspective, sort
   far-to-near and paint — the painter's algorithm, about two hundred lines, no 3D library. Every
@@ -130,7 +137,7 @@ See [NASA_RESOURCES.md](NASA_RESOURCES.md) for every NASA resource used and what
 
 ```bash
 npm run dev       # dev server
-npm test          # 340 tests
+npm test          # 372 tests
 npm run build     # type-check + production build
 npm run measure   # plays the whole game in a headless browser and checks it
 ```
@@ -144,15 +151,15 @@ another size with `npm run measure -- 390 844`. First run needs the browser: `np
 
 ```
 src/data/       parts, scenarios, events, settings, realMissions, glossary, nasaSources, sky,
-                homeSystem, planets, sounds, ship3d, roles
+                homeSystem, planets, sounds, ship3d, flight3d, roles
                 game.ts — the one place the JSON is read and typed
 src/physics/    rocketEquation, power, comms, windows, checks, goals, partEffects, missionFacts
 src/sim/        simulation — the cruise engine; score; shipLayout; mapScale; sky; homeSystem;
-                render3d + shipModel3d — the 3D renderer; team; context; demo
+                render3d + shipModel3d + flight3d — the 3D renderer; team; context; demo
 src/store/      gameStore.ts — the only place game state lives
 src/screens/    Home, TeamSetup, ChooseMission, DesignLab, Launch, MissionControl, Result
-src/components/ ResourceBars, Gauge, Spacecraft, Ship3D, Planet, Starfield, SolarSystem,
-                Beat, Timeline, Glossary, Provenance
+src/components/ ResourceBars, Gauge, Spacecraft, Ship3D, FlightMap3D, Planet, Starfield,
+                SolarSystem, Beat, Timeline, Glossary, Provenance
 src/audio.ts    every sound, built from notes by the browser's own oscillator
 src/styles.css  one stylesheet, plain CSS, all colour in variables on :root
 ```

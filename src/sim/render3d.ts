@@ -307,3 +307,101 @@ export function coneFaces(
   }
   return faces;
 }
+
+/* ========================================================================= */
+/*  A camera that can stand anywhere and look at anything.                   */
+/*                                                                           */
+/*  The projection above is fixed: the eye sits on the +z axis and looks at  */
+/*  the origin, which is all a spinning model on a turntable needs. Flying a */
+/*  mission needs more — a camera that rides behind the spacecraft, or hangs */
+/*  back and swings to keep it in frame. That takes a view basis.            */
+/* ========================================================================= */
+
+export interface View {
+  eye: Vec3;
+  /** The point the camera is pointed at. */
+  target: Vec3;
+  /** Which way is up for the camera. Defaults to the world's up. */
+  up?: Vec3;
+  fov: number;
+  near: number;
+}
+
+/** The camera's own three axes, each at right angles to the other two. */
+export interface Basis {
+  eye: Vec3;
+  right: Vec3;
+  up: Vec3;
+  forward: Vec3;
+}
+
+const WORLD_UP: Vec3 = { x: 0, y: 1, z: 0 };
+
+/**
+ * Build the camera's axes from where it stands and what it looks at.
+ *
+ * Looking straight up or straight down is the one awkward case: "up" and
+ * "forward" are then the same line and there is no sideways left to compute,
+ * so a different up is borrowed for that frame.
+ */
+export function viewBasis(view: View): Basis {
+  const forward = normalise(subtract(view.target, view.eye));
+  let up = view.up ?? WORLD_UP;
+
+  if (Math.abs(dot(forward, normalise(up))) > 0.999) {
+    up = { x: 0, y: 0, z: 1 };
+    if (Math.abs(dot(forward, up)) > 0.999) up = { x: 1, y: 0, z: 0 };
+  }
+
+  const right = normalise(cross(forward, up));
+  return { eye: view.eye, right, up: cross(right, forward), forward };
+}
+
+/**
+ * Where a world point sits relative to the camera: x to its right, y above it,
+ * z straight out in front. Everything the camera can see has a positive z.
+ */
+export function toCamera(p: Vec3, basis: Basis): Vec3 {
+  const d = subtract(p, basis.eye);
+  return { x: dot(d, basis.right), y: dot(d, basis.up), z: dot(d, basis.forward) };
+}
+
+/**
+ * Flatten a world point through a camera that is looking wherever it likes.
+ * Returns null for anything level with or behind the eye.
+ */
+export function projectView(
+  p: Vec3,
+  view: View,
+  basis: Basis,
+  centre: Point2,
+): (Point2 & { depth: number }) | null {
+  const seen = toCamera(p, basis);
+  if (seen.z < view.near) return null;
+  const scale = view.fov / seen.z;
+  return { x: centre.x + seen.x * scale, y: centre.y - seen.y * scale, depth: seen.z };
+}
+
+/**
+ * A run of points flattened together, with anything behind the camera dropped.
+ * An orbit that runs off behind the eye comes back as the part still in front.
+ */
+export function projectPath(
+  points: Vec3[],
+  view: View,
+  basis: Basis,
+  centre: Point2,
+): Point2[] {
+  const out: Point2[] = [];
+  for (const point of points) {
+    const flat = projectView(point, view, basis, centre);
+    if (flat) out.push({ x: flat.x, y: flat.y });
+  }
+  return out;
+}
+
+/** How big something of this size looks from here. Nearer is bigger. */
+export function sizeAt(radius: number, depth: number, view: View): number {
+  if (depth < view.near) return 0;
+  return (radius * view.fov) / depth;
+}

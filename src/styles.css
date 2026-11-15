@@ -701,6 +701,67 @@ a {
 }
 
 /* =========================================================================
+   The mission in 3D
+   ========================================================================= */
+
+.map3d {
+  position: absolute;
+  inset: 0;
+}
+
+.map3d-stage {
+  display: block;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+  touch-action: none;
+}
+
+.map3d-stage--held {
+  cursor: grabbing;
+}
+
+/* The camera buttons sit on the picture rather than beside it, because the
+   cockpit has no room to spare and they belong to the view they change. */
+.map3d-controls {
+  position: absolute;
+  left: 10px;
+  bottom: 10px;
+  display: flex;
+  gap: 6px;
+  z-index: 2;
+}
+
+.map3d-mode {
+  background: rgb(11 18 34 / 82%);
+  backdrop-filter: blur(4px);
+}
+
+.map3d-mode--on {
+  color: #06101f;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+}
+
+.map3d-mode--on:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  filter: brightness(1.08);
+}
+
+.view-toggle--on {
+  color: #06101f;
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+}
+
+.view-toggle--on:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--accent), var(--accent-2));
+  border-color: transparent;
+  filter: brightness(1.08);
+}
+
+/* =========================================================================
    Playing as a team
    ========================================================================= */
 

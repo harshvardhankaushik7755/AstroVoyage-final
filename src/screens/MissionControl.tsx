@@ -38,6 +38,8 @@ import { ShipSchematic, ShipSprite } from "../components/Spacecraft";
 import { reducedMotion } from "../App";
 import { playSound } from "../audio";
 import { callSign, isTeam, ownerOf, roleOf } from "../sim/team";
+import FlightMap3D from "../components/FlightMap3D";
+import type { CameraMode } from "../sim/flight3d";
 import { useGame } from "../store/gameStore";
 
 /** Which gauge each of the engine's own words belongs to. */
@@ -62,6 +64,9 @@ export default function MissionControl() {
   const mapRef = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ w: 860, h: 520 });
   const [coastDays, setCoastDays] = useState(0);
+  /** The flat map, or the one you can fly round. */
+  const [in3d, setIn3d] = useState(false);
+  const [cameraMode, setCameraMode] = useState<CameraMode>("orbit");
 
   const [beat, setBeat] = useState<BeatKind | null>(null);
   const beatShownFor = useRef<string | null>(null);
@@ -227,6 +232,14 @@ export default function MissionControl() {
         <span className="scale">· {scaleLabel(sim.daysPerSecond)}</span>
         <Timeline phase={sim.phase} progress={progress} />
         <span className="speeds">
+          <button
+            className={`btn btn--small view-toggle${in3d ? " view-toggle--on" : ""}`}
+            aria-pressed={in3d}
+            onClick={() => setIn3d((on) => !on)}
+            title={in3d ? "Back to the flat map" : "See the mission in 3D"}
+          >
+            <span aria-hidden="true">{in3d ? "▦" : "▣"}</span> {in3d ? "Flat map" : "3D"}
+          </button>
           {over ? (
             <button className="btn btn--primary btn--small" onClick={() => go("result")}>
               See the results →
@@ -250,6 +263,17 @@ export default function MissionControl() {
       <div className="control">
         {/* ================================================= the flight map */}
         <div className="mapwrap" ref={mapRef}>
+          {in3d ? (
+            <FlightMap3D
+              sim={sim}
+              coastDays={coastDays}
+              width={size.w}
+              height={size.h}
+              spinning={!skipAnimations}
+              mode={cameraMode}
+              onModeChange={setCameraMode}
+            />
+          ) : (
           <svg viewBox={`0 0 ${size.w} ${size.h}`} preserveAspectRatio="xMidYMid slice">
             <Starfield width={size.w} height={size.h} />
 
@@ -472,6 +496,7 @@ export default function MissionControl() {
               )}
             </g>
           </svg>
+          )}
 
           {/* ---- a click anywhere skips the beat */}
           {beat && (

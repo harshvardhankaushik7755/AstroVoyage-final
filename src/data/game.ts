@@ -18,6 +18,7 @@ import homeSystemJson from "./homeSystem.json";
 import planetsJson from "./planets.json";
 import ship3dJson from "./ship3d.json";
 import rolesJson from "./roles.json";
+import flight3dJson from "./flight3d.json";
 
 /* ------------------------------------------------------------------ parts */
 
@@ -481,6 +482,43 @@ export interface RolesConfig {
 }
 
 export const roles = rolesJson as unknown as RolesConfig;
+
+/* ------------------------------------------------- the mission in 3D */
+
+export interface Flight3DConfig {
+  camera: {
+    fov: number;
+    near: number;
+    orbitDistance: number;
+    orbitPitch: number;
+    trackDistance: number;
+    trackPitch: number;
+    followBack: number;
+    followLift: number;
+    followAhead: number;
+    minPitch: number;
+    maxPitch: number;
+    dragSensitivity: number;
+  };
+  motion: { secondsPerTurn: number; easing: number };
+  scene: {
+    ringSegments: number;
+    pathSegments: number;
+    starCount: number;
+    starSeed: number;
+    starRadius: number;
+    sunRadius: number;
+    earthRadius: number;
+    targetRadius: number;
+    shipSize: number;
+    minPixelRadius: number;
+    maxPixelRadius: number;
+    gridRings: number;
+  };
+  colors: Record<string, string>;
+}
+
+export const flight3d = flight3dJson as unknown as Flight3DConfig;
 
 /* ---------------------------------------------------------------- lookups */
 

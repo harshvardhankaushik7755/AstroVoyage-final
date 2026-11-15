@@ -249,6 +249,38 @@ const run = async () => {
 
   await checkScreen(page, "05-mission-control");
 
+  /* ---- the 3D flight view. Like the ship viewer, a mistake in the camera
+     maths shows up as an empty box rather than as an error, so it has to be
+     looked at rather than trusted. */
+  await page.getByRole("button", { name: /3D$/ }).click();
+  await page.waitForTimeout(400);
+  if ((await page.locator(".map3d-stage").count()) === 0) {
+    problem("3D flight view: it did not open");
+  } else {
+    for (const mode of ["Orbit", "Track", "Follow"]) {
+      await page.getByRole("button", { name: mode, exact: true }).click();
+      await page.waitForTimeout(350);
+      const drawn = await page.locator(".map3d-stage *").count();
+      const paths = await page.locator(".map3d-stage polyline").count();
+      if (drawn < 50 || paths < 4) {
+        problem(`3D flight view: ${mode} drew ${drawn} elements and ${paths} paths`);
+      } else {
+        note(`3D flight view: ${mode} drew ${drawn} elements`);
+      }
+    }
+
+    await page.getByRole("button", { name: "Orbit", exact: true }).click();
+    const before = await page.locator(".map3d-stage polyline").first().getAttribute("points");
+    await page.waitForTimeout(900);
+    const after = await page.locator(".map3d-stage polyline").first().getAttribute("points");
+    if (before === after) problem("3D flight view: the camera is not moving on its own");
+    else note("3D flight view: the camera swings round on its own");
+
+    await shoot(page, "05b-flight-3d");
+    await page.getByRole("button", { name: /Flat map/ }).click();
+    await page.waitForTimeout(300);
+  }
+
   /* ---- run the cruise at 4x so the whole flight fits in a sensible wait */
   const fast = page.getByRole("button", { name: "4x" });
   if ((await fast.count()) > 0 && (await fast.isEnabled())) await fast.click();

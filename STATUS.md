@@ -185,3 +185,40 @@ real browser: roles assigned, the card naming the owner, the crew tally on the R
 
 **Still open.** Music — Kunal said he would say more. The submission pack: video, project page,
 deployed link. NASA resources next.
+
+## 2026-11-15 — Stage 17: the whole mission in 3D, with three cameras
+
+**Built.** The **3D** button in Mission Control turns the flat map into a solar system you can fly
+round. Three cameras: **Orbit** swings right round the lot looking at the Sun, **Track** hangs back
+but keeps the spacecraft centred so the system wheels behind it, **Follow** rides astern of the
+spacecraft and looks where it is going. The camera turns on its own and drag takes hold of it.
+
+Files: `src/sim/flight3d.ts` (new — the scene and the three cameras),
+`src/sim/flight3d.test.ts` (new, 32 tests), `src/components/FlightMap3D.tsx` (new),
+`src/data/flight3d.json` (new), `src/sim/render3d.ts` (+ a look-at camera), `MissionControl`,
+`styles.css`, `scripts/measure.mjs`.
+
+**How it stays honest.** The 3D scene asks the simulation the same questions the flat map asks —
+`planetAngle`, `transferPath`, `progressOf` — so it cannot show the spacecraft anywhere the flat
+map does not. A test checks both put it at the same angle. The orbits lie flat because the real
+ones very nearly do; what makes the picture read as solid is the camera's tilt, not a tilt added
+to the solar system.
+
+**Decisions I made on my own.**
+- *The camera distance is set by the HEIGHT of the cockpit map, not its width.* The map is wide and
+  short and the system is round, so vertical is what runs out first. I measured it rather than
+  guessed: at 2.0 system-widths the outer orbit uses about 84% of the height it has. At 1.85 it was
+  96%, which is one label away from clipping.
+- *Stars sit on a sphere of radius 9 system-widths*, far outside anything the mission reaches, so
+  swinging the camera sweeps them past the way a real sky does rather than sliding them like a
+  backdrop.
+- *The spacecraft's heading is read off the path it is drawn on*, not worked out again, so the
+  follow camera can never point somewhere the trail does not go.
+
+**Numbers.** 372 unit tests in 19 files, all passing. `npm run build` passes. `npm run measure`
+passes clean at 1366×650 and 390×844 — 30 checks, and it now opens the 3D view, tries all three
+cameras and checks the camera is actually moving, because with no 3D library behind it a mistake
+in the maths fails silently as an empty box.
+
+**Still open.** Music — Kunal said he would say more. The submission pack: video, project page,
+deployed link. NASA resources.

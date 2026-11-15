@@ -1,0 +1,52 @@
+{
+  "_note": "The 3D view of the mission. Distances here are in system widths, not AU: the scene is scaled so the outermost orbit is 1 unit across whatever the mission, which is why the same camera numbers frame a 0.0026 AU Moon orbit and a 5.2 AU trip to Jupiter.",
+
+  "camera": {
+    "fov": 420,
+    "near": 0.012,
+    "_orbitNote": "Hanging back, looking at the Sun. Pitch is how far above the plane of the orbits the camera sits: zero would be edge-on, a quarter turn would be straight down. The distance is set by the HEIGHT of the cockpit map, not its width: the map is wide and short, and the system is round, so vertical is what runs out first. Measured: at 2.0 the outer orbit uses about 84% of the height it has.",
+    "orbitDistance": 2.0,
+    "orbitPitch": 0.62,
+    "_trackNote": "Same place, but pointed at the spacecraft instead, so the system stays framed and the camera swings to keep the mission in the middle.",
+    "trackDistance": 1.7,
+    "trackPitch": 0.5,
+    "_followNote": "Riding behind the spacecraft. back is how far astern, lift how far above, ahead is how far in front of it the camera looks, so you see where it is going rather than where it has been.",
+    "followBack": 0.26,
+    "followLift": 0.1,
+    "followAhead": 0.18,
+    "minPitch": 0.06,
+    "maxPitch": 1.45,
+    "dragSensitivity": 0.006
+  },
+
+  "motion": {
+    "_note": "secondsPerTurn is how long the camera takes to swing all the way round on its own. easing is how quickly it catches up when the mode changes: 1 would snap, 0.08 glides.",
+    "secondsPerTurn": 46,
+    "easing": 0.08
+  },
+
+  "scene": {
+    "ringSegments": 96,
+    "pathSegments": 110,
+    "starCount": 520,
+    "starSeed": 20261115,
+    "starRadius": 9,
+    "sunRadius": 0.055,
+    "earthRadius": 0.028,
+    "targetRadius": 0.034,
+    "shipSize": 0.03,
+    "minPixelRadius": 2.5,
+    "maxPixelRadius": 46,
+    "gridRings": 3
+  },
+
+  "colors": {
+    "startRing": "#5c7cc4",
+    "targetRing": "#8ba0cf",
+    "pathFlown": "#7ee8c8",
+    "pathAhead": "#48608f",
+    "grid": "#243352",
+    "trail": "#7ee8c8",
+    "star": "#eef2ff"
+  }
+}
