@@ -22,7 +22,8 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: 22
+          # Match the Node/npm the lock file was made with (npm 11), or `npm ci` rejects it.
+          node-version: 24
           cache: npm
       - run: npm ci
       - run: npm test
