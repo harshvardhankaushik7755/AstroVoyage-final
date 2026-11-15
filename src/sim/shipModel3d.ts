@@ -153,18 +153,20 @@ export function shipFaces(design: Design): Face[] {
   /* ---- one sensor box per instrument, along the top */
   const sensors = layout.sensors;
   if (sensors.length > 0) {
-    const size = sensors[0].size;
+    // Scaled down for the solid view: at full size a sensor box is half the
+    // bus and the spacecraft reads as a crate with a lid.
+    const size = sensors[0].size * shape.sensorScale;
     const spread = size * (1 + shape.sensorGap);
     const first = -((sensors.length - 1) / 2) * spread;
-    sensors.forEach((sensor, index) => {
+    sensors.forEach((_sensor, index) => {
       faces.push(
         ...boxFaces(
           {
             x: first + index * spread,
-            y: layout.bus.h / 2 + sensor.size / 2,
+            y: layout.bus.h / 2 + size / 2,
             z: 0,
           },
-          { w: sensor.size, h: sensor.size, d: sensor.size * 0.8 },
+          { w: size, h: size, d: size * 0.8 },
           colors.sensor,
           "instruments",
         ),

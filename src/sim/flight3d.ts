@@ -105,9 +105,14 @@ export function buildScene(sim: SimState, coastDays = 0): Scene3D {
   /* ---- where the spacecraft is, and which way it is pointing */
   let ship: Vec3;
   if (sim.phase === "orbit") {
-    // Riding round the body it reached, a little way off it.
-    const orbitRadius = Math.max(targetRadius * 0.05, 0.03);
-    const riding = (2 * Math.PI * coastDays) / Math.max(1, config.targetOrbitDays / 12);
+    // Riding round the body it reached. The radius has to clear both the
+    // planet and the spacecraft, or the two overlap and it reads as having
+    // flown into it rather than captured around it.
+    const orbitRadius = Math.max(
+      scene.arrivalOrbitRadius,
+      scene.targetRadius + scene.shipSize * 1.4,
+    );
+    const riding = (2 * Math.PI * coastDays) / scene.arrivalOrbitDays;
     const around = onRing(orbitRadius, angles.targetAngleRad + riding);
     ship = { x: target.x + around.x, y: 0, z: target.z + around.z };
   } else {

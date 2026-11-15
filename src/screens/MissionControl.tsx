@@ -128,9 +128,18 @@ export default function MissionControl() {
     beatShownFor.current = pendingKey;
     // Two beeps, the moment the trouble arrives. Silent unless sound is on.
     playSound("alert");
-    if (skipAnimations || reducedMotion()) return;
+    // The beat is drawn inside the flat map's own <svg>, so in 3D it would
+    // never be mounted, never finish, and the card would never open. Skip it
+    // there and go straight to the challenge.
+    if (skipAnimations || in3d || reducedMotion()) return;
     setBeat(beatFor(sim.pendingEvent.defId));
-  }, [pendingKey, sim?.pendingEvent, skipAnimations]);
+  }, [pendingKey, sim?.pendingEvent, skipAnimations, in3d]);
+
+  /* Switching to 3D while a beat is running would strand it for the same
+     reason, so end it the moment the view changes. */
+  useEffect(() => {
+    if (in3d) setBeat(null);
+  }, [in3d]);
 
   const endBeat = useCallback(() => setBeat(null), []);
 
@@ -153,13 +162,15 @@ export default function MissionControl() {
     if (current?.pendingEvent) answer(safestOption(current.pendingEvent));
   }, [cardKey, countdown, answer]);
 
-  /* The card takes focus when it opens — after the beat, not during it. */
+  /* The card takes focus when it opens — after the beat, not during it. And
+     again if the view is switched while it is open, because the click that
+     switched it took the focus away with it. */
   useEffect(() => {
     if (!cardKey) return;
     setShowWhy(false);
     setHovered(null);
     firstOption.current?.focus();
-  }, [cardKey]);
+  }, [cardKey, in3d]);
 
   /* ------------------------------- deltas on the gauges, in the engine's
      own words: whatever the decision's chips said. */

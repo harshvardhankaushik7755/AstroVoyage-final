@@ -453,6 +453,7 @@ export interface Ship3DConfig {
     nozzleSides: number;
     nozzleFlare: number;
     sensorGap: number;
+    sensorScale: number;
     rtgLength: number;
     rtgRadius: number;
     rtgSides: number;
@@ -513,6 +514,8 @@ export interface Flight3DConfig {
     earthRadius: number;
     targetRadius: number;
     shipSize: number;
+    arrivalOrbitRadius: number;
+    arrivalOrbitDays: number;
     minPixelRadius: number;
     maxPixelRadius: number;
     gridRings: number;

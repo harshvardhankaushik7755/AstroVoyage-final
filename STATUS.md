@@ -246,3 +246,31 @@ Files: `src/sim/render3d.ts` (+`renderWith`), `src/sim/flight3d.ts` (+`shipInSce
 
 **For Kunal.** Four hours to submit. The deployed link is the thing judges click — `npm run build`
 then drag `dist/` onto netlify.com/drop.
+
+## 2026-11-15 — Stage 19: the 3D view was unplayable. Fixed.
+
+**The serious one: 3D mode soft-locked the mission.** The two-second beat that plays before a
+challenge card is drawn *inside the flat map's own `<svg>`*. In 3D that element is never mounted,
+so its `onDone` never fired, `beat` stayed set forever, and `event` — which is
+`beat === null ? pendingEvent : null` — stayed null. The card never opened and the mission could
+not be finished. In 3D the beat is now skipped, and switching to 3D ends one already running.
+`measure` now plays a challenge in 3D and fails if no card opens.
+
+**The spacecraft sat on top of the planet it had reached.** Its arrival orbit was
+`max(targetRadius * 0.05, 0.03)` world units, smaller than the planet's own radius plus the
+spacecraft's, so the two overlapped and it read as having flown into Mars rather than captured
+around it. The radius now clears both, from `arrivalOrbitRadius` in the data, and a lap takes 1.2
+mission days instead of 57, so it visibly goes round.
+
+**The model.** Sensor boxes were half the size of the bus, so the spacecraft read as a crate with
+a lid; they are 62% now. The engine bell was muddy brown and over-flared — steel, and slimmer.
+Deeper panels, lighter bus.
+
+**And a real focus bug found by the above.** Switching between flat and 3D while a card is open
+took the keyboard focus to the toggle button and left it there. The card takes focus back.
+
+**Numbers.** 372 tests passing, build passes, `measure` clean at 1366×650 and 390×844 — 31 checks.
+
+**For Kunal — the push.** The reason pushing fails is that the GitHub token on this machine has
+expired: `gh auth status` reports "The token in default is invalid." Run `gh auth login`, then
+`gh repo create astrovoyage --public --source=. --push`.

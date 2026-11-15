@@ -277,6 +277,30 @@ const run = async () => {
     else note("3D flight view: the camera swings round on its own");
 
     await shoot(page, "05b-flight-3d");
+
+    /* The beat that plays before a challenge card is drawn inside the FLAT
+       map's own <svg>. Left in 3D it would never mount, never finish, and the
+       card would never open - the mission soft-locks. Prove a card opens. */
+    const fast3d = page.getByRole("button", { name: "4x" });
+    if ((await fast3d.count()) > 0 && (await fast3d.isEnabled())) await fast3d.click();
+    let cardIn3d = false;
+    for (let i = 0; i < 70; i += 1) {
+      if (await page.locator(".event .option").count()) {
+        cardIn3d = true;
+        break;
+      }
+      await page.waitForTimeout(250);
+    }
+    if (!cardIn3d) {
+      problem("3D flight view: a challenge card never opened - the mission is stuck");
+    } else {
+      // Answer it here: leaving a card open across the view switch is not what
+      // the rest of this run is measuring.
+      await page.locator(".event .option").first().click();
+      await page.waitForTimeout(150);
+      note("3D flight view: challenges still open and can be answered");
+    }
+
     await page.getByRole("button", { name: /Flat map/ }).click();
     await page.waitForTimeout(300);
   }
