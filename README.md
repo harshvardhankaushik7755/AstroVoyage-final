@@ -2,6 +2,14 @@
 
 A browser game for the **NASA Space Apps Challenge 2026**, challenge *"Space Mission Design Game"*.
 
+### ▶ **[Play it now — no install](https://harshvardhankaushik7755.github.io/AstroVoyage-final/)**
+
+**Judges and testers: [open the demo mission](https://harshvardhankaushik7755.github.io/AstroVoyage-final/?demo=1)** — one button picks Mars, loads a tested
+design and launches, so you are watching a flying mission within seconds. Four challenges arrive in
+the first minute, including a green *opportunity* and the follow-up that choosing it causes later.
+
+---
+
 You pick a mission, build a spacecraft under a budget, pass five launch checks, fly it, and answer
 whatever goes wrong on the way. The physics is real. The costs and the luck are tuned to be fair.
 
@@ -18,10 +26,8 @@ npm install     # one time, about a minute
 npm run dev     # opens at http://localhost:5173
 ```
 
-**For judges and testers:** open <http://localhost:5173/?demo=1> and press
-**"Start the demo mission (Mars)"**. That one button picks Mars, loads a tested design and launches,
-so you are watching a flying mission straight away. Four challenges arrive in the first minute —
-including a green *opportunity* and the follow-up that choosing it causes later.
+That is only needed to work on the code. **To play, use the live link at the top** —
+<https://harshvardhankaushik7755.github.io/AstroVoyage-final/?demo=1> goes straight to the demo mission.
 
 ## The screens
 
